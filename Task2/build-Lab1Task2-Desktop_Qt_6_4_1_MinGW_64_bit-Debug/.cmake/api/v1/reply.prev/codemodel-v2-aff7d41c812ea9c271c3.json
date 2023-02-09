@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-0b414c0b7e9cf7678684.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Lab1Task2",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Lab1Task2::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Lab1Task2-Debug-b49469a3e391cdf2fc6f.json",
+					"name" : "Lab1Task2",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Lab1Task2_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Lab1Task2_autogen-Debug-cc36cfe1cc3eb34df88b.json",
+					"name" : "Lab1Task2_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Lab1Task2_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Lab1Task2_autogen_timestamp_deps-Debug-5b2cc96732e7374c3950.json",
+					"name" : "Lab1Task2_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "F:/QtLabs/Lab1/Task2/build-Lab1Task2-Desktop_Qt_6_4_1_MinGW_64_bit-Debug",
+		"source" : "F:/QtLabs/Lab1/Task2/Lab1Task2"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}
