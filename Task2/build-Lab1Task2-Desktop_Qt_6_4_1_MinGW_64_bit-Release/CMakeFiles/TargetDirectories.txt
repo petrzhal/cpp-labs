@@ -1,9 +1,0 @@
-F:/QtLabs/Lab1/Task2/build-Lab1Task2-Desktop_Qt_6_4_1_MinGW_64_bit-Release/CMakeFiles/Lab1Task2.dir
-F:/QtLabs/Lab1/Task2/build-Lab1Task2-Desktop_Qt_6_4_1_MinGW_64_bit-Release/CMakeFiles/edit_cache.dir
-F:/QtLabs/Lab1/Task2/build-Lab1Task2-Desktop_Qt_6_4_1_MinGW_64_bit-Release/CMakeFiles/rebuild_cache.dir
-F:/QtLabs/Lab1/Task2/build-Lab1Task2-Desktop_Qt_6_4_1_MinGW_64_bit-Release/CMakeFiles/list_install_components.dir
-F:/QtLabs/Lab1/Task2/build-Lab1Task2-Desktop_Qt_6_4_1_MinGW_64_bit-Release/CMakeFiles/install.dir
-F:/QtLabs/Lab1/Task2/build-Lab1Task2-Desktop_Qt_6_4_1_MinGW_64_bit-Release/CMakeFiles/install/local.dir
-F:/QtLabs/Lab1/Task2/build-Lab1Task2-Desktop_Qt_6_4_1_MinGW_64_bit-Release/CMakeFiles/install/strip.dir
-F:/QtLabs/Lab1/Task2/build-Lab1Task2-Desktop_Qt_6_4_1_MinGW_64_bit-Release/CMakeFiles/Lab1Task2_autogen_timestamp_deps.dir
-F:/QtLabs/Lab1/Task2/build-Lab1Task2-Desktop_Qt_6_4_1_MinGW_64_bit-Release/CMakeFiles/Lab1Task2_autogen.dir
