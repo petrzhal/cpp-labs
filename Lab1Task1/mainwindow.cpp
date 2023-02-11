@@ -58,6 +58,8 @@ public:
 
     void Normalize();
 
+    void InputValidation();
+
     Date NextDay();
 
     void ScanFile();
@@ -186,6 +188,40 @@ void Date::Normalize() {
     }
 }
 
+void Date::InputValidation() {
+    if (month > 12 || month <= 0 || day <= 0 || year <= 0) {
+        day = month = year = 0;
+        throw "Invalid date";
+    }
+
+    if (month == 2) {
+        if ((!(year % 4) && (year % 100)) || !(year % 400)) {
+            if (day > 29) {
+                day = month = year = 0;
+                throw "Invalid date";
+            }
+        }
+        else {
+            if (day > 28) {
+                day = month = year = 0;
+                throw "Invalid date";
+            }
+        }
+    }
+    else if (month == 1 || month == 3  || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+        if (day > 31) {
+            day = month = year = 0;
+            throw "Invalid date";
+        }
+    }
+    else if (month == 4 || month == 6 || month == 9 || month == 11) {
+        if (day > 30) {
+            day = month = year = 0;
+            throw "Invalid date";
+        }
+    }
+}
+
 int Date::ToDays() {
     int days = 0;
     int monthA[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -254,7 +290,7 @@ void Show(QTableWidget* tableWidget) {
         if (i != dates.size() - 1)
             tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(abs(dates[i].ToDays() - dates[i + 1].ToDays()))));
         else
-            tableWidget->setItem(i, 2, new QTableWidgetItem("null"));
+            tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(abs(dates[i].ToDays() - dates[0].ToDays()))));
         tableWidget->resizeColumnsToContents();
     }
 }
@@ -273,6 +309,8 @@ void MainWindow::ScanFile() {
         while(file.peek() != EOF) {
             std::string date;
             file >> date;
+            Date check = fromStdString(date);
+            check.InputValidation();
             CheckDate(date);
             dates.push_back(fromStdString(date));
         }
@@ -341,7 +379,6 @@ qint64 Duration() {
 void MainWindow::on_pushButton_nextDay_clicked()
 {    
     ui->textBrowser->clear();
-
     Date curDate = fromStdString(ui->listWidget->currentItem()->text().toStdString());
     ui->textBrowser->setText("Дата: " + curDate.ToQString() + "  Следующий день: " + curDate.NextDay().ToQString());
 }
@@ -350,7 +387,6 @@ void MainWindow::on_pushButton_nextDay_clicked()
 void MainWindow::on_pushButton_5_clicked()
 {
     ui->textBrowser->clear();
-
     Date curDate = fromStdString(ui->listWidget->currentItem()->text().toStdString());
     ui->textBrowser->append("Дата: " + curDate.ToQString() + "  Предыдущий день: " + curDate.PreviousDay().ToQString());
 }
@@ -422,10 +458,13 @@ void Dialog::on_pushButton_clicked()
     try {
         CheckDate(ui->lineEdit->text().toStdString());
         dateIn = ui->lineEdit->text().toStdString();
+        Date date = fromStdString(dateIn);
+        date.InputValidation();
         window()->close();
     }
     catch (...) {
         ui->lineEdit->clear();
+        dateIn = "";
         QMessageBox::critical(this, "Ошибка", "Некоректная дата");
     }
 }
@@ -472,11 +511,14 @@ void MainWindow::on_pushButton_edit_clicked()
 {
     std::fstream file;
 
+    dateIn = "";
     Dialog asd("Введите новую дату");
     asd.setModal(true);
     asd.exec();
 
     try {
+        Date date = fromStdString(dateIn);
+        date.InputValidation();
         CheckDate(dateIn);
         file.open(fileName.toStdString(), std::ios::in | std::ios::out);
 
@@ -510,6 +552,7 @@ void MainWindow::on_pushButton_edit_clicked()
 
 void MainWindow::on_pushButton_add_clicked()
 {
+    dateIn = "";
     Dialog w("Введите добавляемую дату");
     w.setModal(true);
     w.exec();
@@ -546,12 +589,20 @@ void MainWindow::on_pushButton_add_clicked()
 
 void MainWindow::on_pushButton_delete_clicked()
 {
-    std::fstream ftle;
+    std::fstream file;
     for (int i = 0; i < dates.size(); ++i) {
         if (dates[i].ToQString() == ui->listWidget->currentItem()->text()) {
             dates.erase(i);
         }
     }
+    file.open(fileName.toStdString(), std::ios::out | std::ios::trunc);
+    for (int i = 0; i < dates.size(); ++i) {
+        file << dates[i].ToQString().toStdString();
+        if (i != dates.size() - 1)
+            file << "\n";
+    }
+    file.close();
+
     delete tableWidget;
     tableWidget = new QTableWidget(this);
     Show(tableWidget);
