@@ -361,7 +361,9 @@ bool cmpAverage(const abiturient& ab1, const abiturient& ab2) {
     return false;
 }
 
-bool eqName(const std::string& str1, const std::string& str2) {
+bool eqName(std::string str1, std::string str2) {
+    transform(str1.begin(), str1.end(), str1.begin(), tolower);
+    transform(str2.begin(), str2.end(), str2.begin(), tolower);
     if (str1.find(str2, 0) != std::string::npos)
         return true;
     else
