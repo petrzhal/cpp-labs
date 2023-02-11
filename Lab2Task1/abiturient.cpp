@@ -14,10 +14,16 @@ abiturient::abiturient(const abiturient& other) {
 }
 
 void abiturient::set_name(const std::string& name) {
+    for (int i = 0; i < name.length(); ++i) {
+        if (!isalpha(name[i]) && name[i] != ' ' && name[i] != '\'')
+            throw "Invalid name";
+    }
     this->name = QString::fromStdString(name);
 }
 
 void abiturient::set_marks(int rus, int math, int phys) {
+    if (rus > 10 || rus < 0 || math > 10 || math < 0 || phys > 10 || phys < 0)
+        throw "Invalid mark";
     this->rus = rus;
     this->math = math;
     this->phys = phys;

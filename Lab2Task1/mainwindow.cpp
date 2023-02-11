@@ -53,41 +53,67 @@ void MainWindow::on_pushButton_chooseFile_clicked()
 
     if (fileName.length()) {
         ui->lineEdit->setText(fileName);
+        try {
+            std::string path = fileName.toStdString();
+            std::string fileType;
+            std::copy(path.end() - 4, path.end(), std::back_inserter(fileType));
 
-        std::fstream file;
-        file.open(fileName.toStdString(), std::ios::in);
-        for (int i = 0; file.peek() != EOF; ++i) {
-            abiturient ab;
+            for (const auto& ch : path)
+                if (ch < 0)
+                    throw "Invalid file";
+            if (fileType != ".txt")
+                throw "Invalid file";
 
-            std::string buf;
-            std::getline(file, buf);
+            std::fstream file;
+            file.open(fileName.toStdString(), std::ios::in);
+            for (int i = 0; file.peek() != EOF; ++i) {
+                abiturient ab;
 
-            ab.set_name(buf);
+                std::string buf;
+                std::getline(file, buf);
 
-            int rus, math, phys;
-            file >> rus >> math >> phys;
+                ab.set_name(buf);
 
-            ab.set_marks(rus, math ,phys);
+                int rus, math, phys;
+                file >> rus >> math >> phys;
 
-            std::getline(file, buf);
+                ab.set_marks(rus, math ,phys);
 
-            abList.addEnd(ab);
+                std::getline(file, buf);
+
+                abList.addEnd(ab);
+            }
+            file.close();
+
+            for (int i = 0; i < abList.size(); ++i) {
+                ui->listWidget->addItem(abList[i].get_name());
+            }
+            ui->pushButton_add->setEnabled(true);
+            ui->pushButton_findAverage->setEnabled(true);
+            ui->pushButton_findMath->setEnabled(true);
+            ui->pushButton_findName->setEnabled(true);
+            ui->pushButton_findRus->setEnabled(true);
+            ui->pushButton_clear->setEnabled(true);
+            ui->pushButton_findPhys->setEnabled(true);
+            ui->pushButton_showUpperAverage->setEnabled(true);
+            ui->pushButton_sort->setEnabled(true);
+            ui->pushButton_show->setEnabled(true);
+        } catch (...) {
+            ui->lineEdit->setText("Файл не выбран");
+            ui->pushButton_add->setEnabled(false);
+            ui->pushButton_change->setEnabled(false);
+            ui->pushButton_clear->setEnabled(false);
+            ui->pushButton_delete->setEnabled(false);
+            ui->pushButton_findAverage->setEnabled(false);
+            ui->pushButton_findMath->setEnabled(false);
+            ui->pushButton_findName->setEnabled(false);
+            ui->pushButton_findRus->setEnabled(false);
+            ui->pushButton_findPhys->setEnabled(false);
+            ui->pushButton_showUpperAverage->setEnabled(false);
+            ui->pushButton_sort->setEnabled(false);
+            ui->pushButton_show->setEnabled(false);
+            QMessageBox::critical(this, "Ошибка", "Выбранный файл не поддерживается");
         }
-        file.close();
-
-        for (int i = 0; i < abList.size(); ++i) {
-            ui->listWidget->addItem(abList[i].get_name());
-        }
-        ui->pushButton_add->setEnabled(true);
-        ui->pushButton_findAverage->setEnabled(true);
-        ui->pushButton_findMath->setEnabled(true);
-        ui->pushButton_findName->setEnabled(true);
-        ui->pushButton_findRus->setEnabled(true);
-        ui->pushButton_clear->setEnabled(true);
-        ui->pushButton_findPhys->setEnabled(true);
-        ui->pushButton_showUpperAverage->setEnabled(true);
-        ui->pushButton_sort->setEnabled(true);
-        ui->pushButton_show->setEnabled(true);
     }
     else {
         ui->lineEdit->setText("Файл не выбран");
