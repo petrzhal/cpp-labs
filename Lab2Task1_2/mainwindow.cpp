@@ -3,7 +3,6 @@
 #include "member.h"
 #include "list.cpp"
 #include "newplayer.h"
-//#include "ui_newplayer.h"
 #include <QFileDialog>
 #include <fstream>
 #include <QListWidget>

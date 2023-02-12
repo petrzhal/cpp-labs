@@ -427,7 +427,6 @@ qint64 DaysTillYourBithday() {
     else {
         birthDate.replace(6, 4, "2024");
     }
-    qDebug() << QString::fromStdString(birthDate);
     QDate date(stoi(cDate.substr(6, 4)), stoi(cDate.substr(3, 2)), stoi(cDate.substr(0, 2)));
     QDate birth(stoi(birthDate.substr(6, 4)), stoi(birthDate.substr(3, 2)), stoi(birthDate.substr(0, 2)));
 
