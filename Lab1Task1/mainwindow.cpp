@@ -411,7 +411,8 @@ void MainWindow::on_pushButton_5_clicked()
 qint64 DaysTillYourBithday() {
     std::string cDate = currentDateTime().substr(0, 10);
     std::string birthDate = dateIn;
-
+    if (birthDate.substr(0, 5) == "29.02")
+        birthDate.replace(0, 5, "01.03");
     if ( stoi(cDate.substr(3, 2)) < stoi(birthDate.substr(3, 2)) ) {
         birthDate.replace(6, 4, "2023");
     }
@@ -426,7 +427,7 @@ qint64 DaysTillYourBithday() {
     else {
         birthDate.replace(6, 4, "2024");
     }
-
+    qDebug() << QString::fromStdString(birthDate);
     QDate date(stoi(cDate.substr(6, 4)), stoi(cDate.substr(3, 2)), stoi(cDate.substr(0, 2)));
     QDate birth(stoi(birthDate.substr(6, 4)), stoi(birthDate.substr(3, 2)), stoi(birthDate.substr(0, 2)));
 
@@ -456,7 +457,6 @@ void MainWindow::on_pushButton_isLeap_clicked()
 
 void MainWindow::on_pushButton_duration_clicked()
 {
-
     Dialog b;
     b.setModal(true);
     b.exec();

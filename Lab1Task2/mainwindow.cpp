@@ -48,10 +48,13 @@ void MainWindow::on_pushButton_fileOpen_clicked()
     ui->listWidget->clear();
     students.clear();
 
+    fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/", tr("Text Docs (*.txt)"));
+
     try {
-        fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/", tr("Text Docs (*.txt)"));
         std::fstream file;
         file.open(fileName.toStdString(), std::ios::in | std::ios::out);
+        if (!file.is_open())
+            throw "Invalid file";
         for (int i = 0; file.peek() != EOF; ++i) {
             Student ab;
             std::string str;
@@ -590,7 +593,6 @@ void MainWindow::on_pushButton_add_clicked()
             ui->listWidget->addItem(QString::fromStdString(var.get_name()));
         }
     }
-    ui->pushButton_add->setEnabled(false);
     ui->pushButton_change->setEnabled(false);
     ui->pushButton_delete->setEnabled(false);
 }

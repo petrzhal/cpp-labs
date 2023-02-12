@@ -22,6 +22,9 @@ set(PROJECT_SOURCES
         member.cpp
         member.h
         list.cpp
+        newplayer.cpp
+        newplayer.h
+        newplayer.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
