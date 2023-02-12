@@ -299,47 +299,63 @@ QTableWidget *tableWidget;
 
 void MainWindow::ScanFile() {
     fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/", tr("Text Docs (*.txt)"));
-
-    std::fstream file;
-    file.open(fileName.toStdString(), std::ios::in);
-
-    dates.clear();
-
     try {
-        while(file.peek() != EOF) {
-            std::string date;
-            file >> date;
-            Date check = fromStdString(date);
-            check.InputValidation();
-            CheckDate(date);
-            dates.push_back(fromStdString(date));
+        std::fstream file;
+        file.open(fileName.toStdString(), std::ios::in);
+        if (fileName.length())
+            if (!file.is_open())
+                throw "Invalid file";
+        dates.clear();
+
+        try {
+            while(file.peek() != EOF) {
+                std::string date;
+                file >> date;
+                Date check = fromStdString(date);
+                check.InputValidation();
+                CheckDate(date);
+                dates.push_back(fromStdString(date));
+            }
         }
-    }
-    catch (...) {
-        QMessageBox::critical(this, "Ошибка чтения файла", "В выбранном файле нарушен\nформат записи даты");
+        catch (...) {
+            QMessageBox::critical(this, "Ошибка чтения файла", "В выбранном файле нарушен\nформат записи даты");
+            fileName.clear();
+            dates.clear();
+        }
+        ui->lineEdit->setText(fileName);
+        ui->textBrowser->clear();
+
+        for (auto& var : dates) {
+            var.Normalize();
+        }
+
+        file.close();
+
+        ui->listWidget->clear();
+        for (auto& var : dates) {
+            ui->listWidget->addItem(var.ToQString());
+        }
+        delete tableWidget;
+        tableWidget = new QTableWidget(this);
+        if (fileName.length()) {
+            ui->pushButton_add->setEnabled(true);
+            Show(tableWidget);
+        }
+        else {
+            ui->lineEdit->setText("Файл не выбран");
+            ui->pushButton_add->setEnabled(false);
+            ui->pushButton_isLeap->setEnabled(false);
+            ui->pushButton_nextDay->setEnabled(false);
+            ui->pushButton_5->setEnabled(false);
+            ui->listWidget->clear();
+            ui->pushButton->setEnabled(false);
+            ui->pushButton_edit->setEnabled(false);
+            ui->pushButton_delete->setEnabled(false);
+        }
+    } catch (...) {
+        QMessageBox::critical(this, "Ошибка чтения файла", "Выбранный файл не поддерживается");
         fileName.clear();
         dates.clear();
-    }
-    ui->lineEdit->setText(fileName);
-    ui->textBrowser->clear();
-
-    for (auto& var : dates) {
-        var.Normalize();
-    }
-
-    file.close();
-
-    ui->listWidget->clear();
-    for (auto& var : dates) {
-        ui->listWidget->addItem(var.ToQString());
-    }
-    delete tableWidget;
-    tableWidget = new QTableWidget(this);
-    if (fileName.length()) {
-        ui->pushButton_add->setEnabled(true);
-        Show(tableWidget);
-    }
-    else {
         ui->lineEdit->setText("Файл не выбран");
         ui->pushButton_add->setEnabled(false);
         ui->pushButton_isLeap->setEnabled(false);
