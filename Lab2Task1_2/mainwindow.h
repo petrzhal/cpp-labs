@@ -29,6 +29,32 @@ private slots:
 
     void on_pushButton_edit_clicked();
 
+    void on_listWidget_teams_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_listWidget_countries_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_listWidget_itemClicked(QListWidgetItem *item);
+
+    void on_listWidget_teams_itemClicked(QListWidgetItem *item);
+
+    void on_listWidget_countries_itemClicked(QListWidgetItem *item);
+
+    void on_pushButton_showWeight_clicked();
+
+    void on_pushButton_showHeight_clicked();
+
+    void on_lineEdit_nameFilter_textChanged(const QString &arg1);
+
+    void on_lineEdit_teamFilter_textChanged(const QString &arg1);
+
+    void on_tabWidget_tabBarClicked(int index);
+
+    void on_pushButton_showYoungest_clicked();
+
+    void on_lineEdit_countryFilter_textChanged(const QString &arg1);
+
+    void on_pushButton_clear_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

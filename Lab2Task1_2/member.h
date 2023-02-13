@@ -14,13 +14,13 @@ private:
     double weight;
 public:
     Member();
-    std::string get_country();
-    std::string get_team();
-    std::string get_name();
-    int get_number();
-    int get_age();
-    int get_height();
-    double get_weight();
+    std::string get_country() const;
+    std::string get_team() const;
+    std::string get_name() const;
+    int get_number() const;
+    int get_age() const;
+    int get_height() const;
+    double get_weight() const;
     void set_country(const std::string&);
     void set_team(const std::string&);
     void set_name(const std::string&);

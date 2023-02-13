@@ -25,6 +25,12 @@ set(PROJECT_SOURCES
         newplayer.cpp
         newplayer.h
         newplayer.ui
+        weight.cpp
+        weight.h
+        weight.ui
+        height.cpp
+        height.h
+        height.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

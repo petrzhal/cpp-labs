@@ -5,31 +5,31 @@ Member::Member()
 
 }
 
-std::string Member::get_country() {
+std::string Member::get_country() const {
     return country;
 }
 
-std::string Member::get_team() {
+std::string Member::get_team() const {
     return team;
 }
 
-std::string Member::get_name() {
+std::string Member::get_name() const {
     return name;
 }
 
-int Member::get_number() {
+int Member::get_number() const {
     return number;
 }
 
-int Member::get_age() {
+int Member::get_age() const {
     return age;
 }
 
-int Member::get_height() {
+int Member::get_height() const {
     return height;
 }
 
-double Member::get_weight() {
+double Member::get_weight() const {
     return weight;
 }
 

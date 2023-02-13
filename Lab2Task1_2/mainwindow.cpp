@@ -3,6 +3,8 @@
 #include "member.h"
 #include "list.cpp"
 #include "newplayer.h"
+#include "weight.h"
+#include "height.h"
 #include <QFileDialog>
 #include <fstream>
 #include <QListWidget>
@@ -11,6 +13,7 @@
 #include <QTableWidgetItem>
 #include <QHeaderView>
 #include <QMessageBox>
+#include <QPixmap>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -18,7 +21,20 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->lineEdit_filePath->setReadOnly(true);
-
+    ui->lineEdit_nameFilter->setReadOnly(true);
+    ui->lineEdit_teamFilter->setReadOnly(true);
+    ui->lineEdit_countryFilter->setReadOnly(true);
+    ui->pushButton_edit->setEnabled(false);
+    ui->pushButton_add->setEnabled(false);
+    ui->pushButton_clear->setEnabled(false);
+    ui->pushButton_delete->setEnabled(false);
+    ui->pushButton_showAll->setEnabled(false);
+    ui->pushButton_showHeight->setEnabled(false);
+    ui->pushButton_showWeight->setEnabled(false);
+    ui->pushButton_showYoungest->setEnabled(false);
+    ui->pushButton_delete->setIcon(QPixmap("C:/QtLabs/Resources/delete.png"));
+    ui->pushButton_add->setIcon(QPixmap("C:/QtLabs/Resources/add.png"));
+    ui->pushButton_edit->setIcon(QPixmap("C:/QtLabs/Resources/edit.png"));
 }
 
 MainWindow::~MainWindow()
@@ -27,10 +43,57 @@ MainWindow::~MainWindow()
 }
 
 list<Member> players;
+QVector<QVector<Member>> teams;
+QVector<QVector<Member>> countries;
 QString path;
+
+bool IsTeamChecked(int ind) {
+    for (int i = ind - 1; i >= 0; --i) {
+        if (players[i].get_team() == players[ind].get_team())
+            return true;
+    }
+    return false;
+}
+
+void UpdateTeams() {
+    teams.clear();
+    for (int i = 0; i < players.size(); ++i) {
+        if (!IsTeamChecked(i)) {
+            QVector<Member> team;
+            for (int j = i; j < players.size(); ++j) {
+                if (players[j].get_team() == players[i].get_team())
+                    team.push_back(players[j]);
+            }
+            teams.push_back(team);
+        }
+    }
+}
+
+bool IsCountryChecked(int ind) {
+    for (int i = ind - 1; i >= 0; --i) {
+        if (players[i].get_country() == players[ind].get_country())
+            return true;
+    }
+    return false;
+}
+
+void UpdateCountries() {
+    countries.clear();
+    for (int i = 0; i < players.size(); ++i) {
+        if (!IsCountryChecked(i)) {
+            QVector<Member> country;
+            for (int j = i; j < players.size(); ++j) {
+                if (players[j].get_country() == players[i].get_country())
+                    country.push_back(players[j]);
+            }
+            countries.push_back(country);
+        }
+    }
+}
 
 void MainWindow::on_pushButton_chooseFile_clicked()
 {
+    ui->statusBar->showMessage("");
     players.clear();
     ui->listWidget->clear();
     path = QFileDialog::getOpenFileName(this, tr("Open File"), "/", tr("Text Docs (*.txt)"));
@@ -77,20 +140,61 @@ void MainWindow::on_pushButton_chooseFile_clicked()
             for (int i = 0; i < players.size(); ++i) {
                 ui->listWidget->addItem(QString::fromStdString(players[i].get_name()));
             }
+            UpdateTeams();
+            ui->listWidget_teams->clear();
+            for (const auto& team : teams) {
+                ui->listWidget_teams->addItem(QString::fromStdString(team[0].get_team()));
+            }
+            ui->listWidget_countries->clear();
+            UpdateCountries();
+            for (const auto& country : countries) {
+                ui->listWidget_countries->addItem(QString::fromStdString(country[0].get_country()));
+            }
+            ui->lineEdit_nameFilter->setReadOnly(false);
+            ui->lineEdit_teamFilter->setReadOnly(false);
+            ui->lineEdit_countryFilter->setReadOnly(false);
+            ui->pushButton_add->setEnabled(true);
+            ui->pushButton_clear->setEnabled(true);
+            ui->pushButton_showAll->setEnabled(true);
+            ui->pushButton_showHeight->setEnabled(true);
+            ui->pushButton_showWeight->setEnabled(true);
+            ui->pushButton_showYoungest->setEnabled(true);
         } catch (...) {
-            QMessageBox::critical(this, "Ошибка", "Выбранный файл не поддерживается");
+            QMessageBox::critical(this, "Ошибка", "В выбранном файле нарушен формат записи");
             ui->lineEdit_filePath->setText("Файл не выбран");
-            ui->lineEdit_filePath->clear();
+            ui->lineEdit_nameFilter->setReadOnly(true);
+            ui->lineEdit_teamFilter->setReadOnly(true);
+            ui->lineEdit_countryFilter->setReadOnly(true);
+            ui->pushButton_edit->setEnabled(false);
+            ui->pushButton_add->setEnabled(false);
+            ui->pushButton_clear->setEnabled(false);
+            ui->pushButton_delete->setEnabled(false);
+            ui->pushButton_showAll->setEnabled(false);
+            ui->pushButton_showHeight->setEnabled(false);
+            ui->pushButton_showWeight->setEnabled(false);
+            ui->pushButton_showYoungest->setEnabled(false);
         }
     }
     else {
         ui->lineEdit_filePath->setText("Файл не выбран");
+        ui->lineEdit_nameFilter->setReadOnly(true);
+        ui->lineEdit_teamFilter->setReadOnly(true);
+        ui->lineEdit_countryFilter->setReadOnly(true);
+        ui->pushButton_edit->setEnabled(false);
+        ui->pushButton_add->setEnabled(false);
+        ui->pushButton_clear->setEnabled(false);
+        ui->pushButton_delete->setEnabled(false);
+        ui->pushButton_showAll->setEnabled(false);
+        ui->pushButton_showHeight->setEnabled(false);
+        ui->pushButton_showWeight->setEnabled(false);
+        ui->pushButton_showYoungest->setEnabled(false);
     }
 }
 
 
 void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
 {
+    ui->statusBar->showMessage("");
     int ind = 0;
     for (int i = 0; i < players.size(); ++i) {
         if (ui->listWidget->currentItem()->text().toStdString() == players[i].get_name()) {
@@ -138,6 +242,7 @@ void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
 
 void MainWindow::on_pushButton_showAll_clicked()
 {
+    ui->statusBar->showMessage("");
     QWidget *window = new QWidget();
     window->setWindowTitle("Информация об участнике");
     window->setGeometry(QRect(400, 200, 800, 250));
@@ -181,6 +286,7 @@ void MainWindow::on_pushButton_showAll_clicked()
 
 void MainWindow::on_pushButton_delete_clicked()
 {
+    ui->statusBar->showMessage("");
     for (int i = 0; i < players.size(); ++i) {
         if (players[i].get_name() == ui->listWidget->currentItem()->text().toStdString()) {
             players.erase(i);
@@ -204,12 +310,25 @@ void MainWindow::on_pushButton_delete_clicked()
             file << "\n";
     }
     file.close();
+    UpdateTeams();
+    ui->listWidget_teams->clear();
+    for (const auto& team : teams) {
+        ui->listWidget_teams->addItem(QString::fromStdString(team[0].get_team()));
+    }
+    ui->listWidget_countries->clear();
+    UpdateCountries();
+    for (const auto& country : countries) {
+        ui->listWidget_countries->addItem(QString::fromStdString(country[0].get_country()));
+    }
+    ui->pushButton_edit->setEnabled(false);
+    ui->pushButton_delete->setEnabled(false);
 }
 
 Member Player;
 
 void MainWindow::on_pushButton_add_clicked()
 {
+    ui->statusBar->showMessage("");
     NewPlayer wind(FormCreationConfig::Add);
     wind.setModal(true);
     wind.exec();
@@ -225,10 +344,23 @@ void MainWindow::on_pushButton_add_clicked()
     file << Player.get_weight();
     file.close();
     ui->listWidget->addItem(QString::fromStdString(players.end()->data.get_name()));
+    UpdateTeams();
+    ui->listWidget_teams->clear();
+    for (const auto& team : teams) {
+        ui->listWidget_teams->addItem(QString::fromStdString(team[0].get_team()));
+    }
+    ui->listWidget_countries->clear();
+    UpdateCountries();
+    for (const auto& country : countries) {
+        ui->listWidget_countries->addItem(QString::fromStdString(country[0].get_country()));
+    }
+    ui->pushButton_edit->setEnabled(false);
+    ui->pushButton_delete->setEnabled(false);
 }
 
 void MainWindow::on_pushButton_edit_clicked()
 {
+    ui->statusBar->showMessage("");
     int ind = 0;
     for (int i = 0; i < players.size(); ++i) {
         if (ui->listWidget->currentItem()->text().toStdString() == players[i].get_name()) {
@@ -259,5 +391,364 @@ void MainWindow::on_pushButton_edit_clicked()
     for (int i = 0; i < players.size(); ++i) {
         ui->listWidget->addItem(QString::fromStdString(players[i].get_name()));
     }
+    UpdateTeams();
+    ui->listWidget_teams->clear();
+    for (const auto& team : teams) {
+        ui->listWidget_teams->addItem(QString::fromStdString(team[0].get_team()));
+    }
+    ui->listWidget_countries->clear();
+    UpdateCountries();
+    for (const auto& country : countries) {
+        ui->listWidget_countries->addItem(QString::fromStdString(country[0].get_country()));
+    }
+    ui->pushButton_edit->setEnabled(false);
+    ui->pushButton_delete->setEnabled(false);
+}
+
+
+void MainWindow::on_listWidget_teams_itemDoubleClicked(QListWidgetItem *item)
+{
+    ui->statusBar->showMessage("");
+    int ind = ui->listWidget_teams->currentRow();
+    QWidget *window = new QWidget();
+    window->setWindowTitle("Информация об участниках из команды: " + QString::fromStdString(teams[ind][0].get_team()));
+    window->setGeometry(QRect(400, 200, 800, 250));
+    window->resize(750, 500);
+    QTableWidget *tableWidget = new QTableWidget();
+    QGridLayout *layout = new QGridLayout(window);
+    layout->addWidget(tableWidget, 0, 0);
+    tableWidget->setColumnCount(7);
+    tableWidget->setShowGrid(true);
+    QStringList headers1;
+            headers1.append("Страна");
+            headers1.append("Команда");
+            headers1.append("ФИО");
+            headers1.append("Игровой номер");
+            headers1.append("Возраст");
+            headers1.append("Рост");
+            headers1.append("Вес");
+    tableWidget->setHorizontalHeaderLabels(headers1);
+    tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
+    tableWidget->horizontalHeader()->setStretchLastSection(true);
+    tableWidget->setEditTriggers(QTableWidget::NoEditTriggers);
+    for (int i = 0; i < teams[ind].size(); ++i) {
+        tableWidget->insertRow(i);
+        tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(teams[ind][i].get_country())));
+        tableWidget->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(teams[ind][i].get_team())));
+        tableWidget->setItem(i, 2, new QTableWidgetItem(QString::fromStdString(teams[ind][i].get_name())));
+        tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(teams[ind][i].get_number())));
+        tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(teams[ind][i].get_age())));
+        tableWidget->setItem(i, 5, new QTableWidgetItem(QString::number(teams[ind][i].get_height())));
+        tableWidget->setItem(i, 6, new QTableWidgetItem(QString::number(teams[ind][i].get_weight())));
+    }
+    tableWidget->resizeColumnsToContents();
+    window->show();
+    ui->statusBar->showMessage("");
+}
+
+
+void MainWindow::on_listWidget_countries_itemDoubleClicked(QListWidgetItem *item)
+{
+    ui->statusBar->showMessage("");
+    int ind = ui->listWidget_countries->currentRow();
+    QWidget *window = new QWidget();
+    window->setWindowTitle("Информация об участниках из страны: " + QString::fromStdString(countries[ind][0].get_country()));
+    window->setGeometry(QRect(400, 200, 800, 250));
+    window->resize(750, 500);
+    QTableWidget *tableWidget = new QTableWidget();
+    QGridLayout *layout = new QGridLayout(window);
+    layout->addWidget(tableWidget, 0, 0);
+    tableWidget->setColumnCount(7);
+    tableWidget->setShowGrid(true);
+    QStringList headers1;
+            headers1.append("Страна");
+            headers1.append("Команда");
+            headers1.append("ФИО");
+            headers1.append("Игровой номер");
+            headers1.append("Возраст");
+            headers1.append("Рост");
+            headers1.append("Вес");
+    tableWidget->setHorizontalHeaderLabels(headers1);
+    tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
+    tableWidget->horizontalHeader()->setStretchLastSection(true);
+    tableWidget->setEditTriggers(QTableWidget::NoEditTriggers);
+    for (int i = 0; i < countries[ind].size(); ++i) {
+        tableWidget->insertRow(i);
+        tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(countries[ind][i].get_country())));
+        tableWidget->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(countries[ind][i].get_team())));
+        tableWidget->setItem(i, 2, new QTableWidgetItem(QString::fromStdString(countries[ind][i].get_name())));
+        tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(countries[ind][i].get_number())));
+        tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(countries[ind][i].get_age())));
+        tableWidget->setItem(i, 5, new QTableWidgetItem(QString::number(countries[ind][i].get_height())));
+        tableWidget->setItem(i, 6, new QTableWidgetItem(QString::number(countries[ind][i].get_weight())));
+    }
+    tableWidget->resizeColumnsToContents();
+    window->show();
+    ui->statusBar->showMessage("");
+}
+
+
+void MainWindow::on_listWidget_itemClicked(QListWidgetItem *item)
+{
+    ui->statusBar->showMessage("Щелкните дважды для просмотра информации");
+    ui->pushButton_edit->setEnabled(true);
+    ui->pushButton_delete->setEnabled(true);
+}
+
+
+void MainWindow::on_listWidget_teams_itemClicked(QListWidgetItem *item)
+{
+    ui->statusBar->showMessage("Щелкните дважды для просмотра информации");
+}
+
+
+void MainWindow::on_listWidget_countries_itemClicked(QListWidgetItem *item)
+{
+    ui->statusBar->showMessage("Щелкните дважды для просмотра информации");
+}
+
+QPair<int, int> range;
+
+void MainWindow::on_pushButton_showWeight_clicked()
+{
+    range = {0, 0};
+    ui->statusBar->showMessage("");
+    Weight wind;
+    wind.setModal(true);
+    wind.exec();
+
+    if (range.first != 0 && range.second != 0) {
+        QVector<Member> inRangePlayers;
+        for (int i = 0; i < players.size(); ++i) {
+            if (players[i].get_weight() <= range.second && players[i].get_weight() >= range.first) {
+                inRangePlayers.push_back(players[i]);
+            }
+        }
+        if (inRangePlayers.size()) {
+            QWidget *window = new QWidget();
+            window->setWindowTitle("Информация об участниках из введенной весовой категории");
+            window->setGeometry(QRect(400, 200, 800, 250));
+            window->resize(750, 500);
+            QTableWidget *tableWidget = new QTableWidget();
+            QGridLayout *layout = new QGridLayout(window);
+            layout->addWidget(tableWidget, 0, 0);
+            tableWidget->setColumnCount(7);
+            tableWidget->setShowGrid(true);
+            QStringList headers1;
+                    headers1.append("Страна");
+                    headers1.append("Команда");
+                    headers1.append("ФИО");
+                    headers1.append("Игровой номер");
+                    headers1.append("Возраст");
+                    headers1.append("Рост");
+                    headers1.append("Вес");
+            tableWidget->setHorizontalHeaderLabels(headers1);
+            tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
+            tableWidget->horizontalHeader()->setStretchLastSection(true);
+            tableWidget->setEditTriggers(QTableWidget::NoEditTriggers);
+            for (int i = 0; i < inRangePlayers.size(); ++i) {
+                tableWidget->insertRow(i);
+                tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(inRangePlayers[i].get_country())));
+                tableWidget->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(inRangePlayers[i].get_team())));
+                tableWidget->setItem(i, 2, new QTableWidgetItem(QString::fromStdString(inRangePlayers[i].get_name())));
+                tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(inRangePlayers[i].get_number())));
+                tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(inRangePlayers[i].get_age())));
+                tableWidget->setItem(i, 5, new QTableWidgetItem(QString::number(inRangePlayers[i].get_height())));
+                tableWidget->setItem(i, 6, new QTableWidgetItem(QString::number(inRangePlayers[i].get_weight())));
+            }
+            tableWidget->resizeColumnsToContents();
+            window->show();
+        }
+        else {
+            QMessageBox::information(this, "Пусто", "Участников из заданной весовой\nкатегории не найдено");
+        }
+    }
+}
+
+int neededHeight;
+
+void MainWindow::on_pushButton_showHeight_clicked()
+{
+    ui->statusBar->showMessage("");
+    neededHeight = 0;
+    Height wind;
+    wind.setModal(true);
+    wind.exec();
+    if (neededHeight) {
+        QVector<Member> heightPlayers;
+        for (int i = 0; i < players.size(); ++i) {
+            if (players[i].get_height() >= neededHeight) {
+                heightPlayers.push_back(players[i]);
+            }
+        }
+        if (heightPlayers.size()) {
+            QWidget *window = new QWidget();
+            window->setWindowTitle("Информация об участниках с ростом не ниже введенного");
+            window->setGeometry(QRect(400, 200, 800, 250));
+            window->resize(750, 500);
+            QTableWidget *tableWidget = new QTableWidget();
+            QGridLayout *layout = new QGridLayout(window);
+            layout->addWidget(tableWidget, 0, 0);
+            tableWidget->setColumnCount(7);
+            tableWidget->setShowGrid(true);
+            QStringList headers1;
+                    headers1.append("Страна");
+                    headers1.append("Команда");
+                    headers1.append("ФИО");
+                    headers1.append("Игровой номер");
+                    headers1.append("Возраст");
+                    headers1.append("Рост");
+                    headers1.append("Вес");
+            tableWidget->setHorizontalHeaderLabels(headers1);
+            tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
+            tableWidget->horizontalHeader()->setStretchLastSection(true);
+            tableWidget->setEditTriggers(QTableWidget::NoEditTriggers);
+            for (int i = 0; i < heightPlayers.size(); ++i) {
+                tableWidget->insertRow(i);
+                tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(heightPlayers[i].get_country())));
+                tableWidget->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(heightPlayers[i].get_team())));
+                tableWidget->setItem(i, 2, new QTableWidgetItem(QString::fromStdString(heightPlayers[i].get_name())));
+                tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(heightPlayers[i].get_number())));
+                tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(heightPlayers[i].get_age())));
+                tableWidget->setItem(i, 5, new QTableWidgetItem(QString::number(heightPlayers[i].get_height())));
+                tableWidget->setItem(i, 6, new QTableWidgetItem(QString::number(heightPlayers[i].get_weight())));
+            }
+            tableWidget->resizeColumnsToContents();
+            window->show();
+        }
+        else {
+              QMessageBox::information(this, "Пусто", "Участников с ростом не ниже введенного не найдено");
+        }
+    }
+}
+
+bool eqName(std::string str1, std::string str2) {
+    transform(str1.begin(), str1.end(), str1.begin(), tolower);
+    transform(str2.begin(), str2.end(), str2.begin(), tolower);
+    if (str1.find(str2, 0) != std::string::npos)
+        return true;
+    else
+        return false;
+}
+
+void MainWindow::on_lineEdit_nameFilter_textChanged(const QString &arg1)
+{
+    ui->statusBar->showMessage("");
+    ui->listWidget->clear();
+    for (int i = 0; i < players.size(); ++i) {
+        if (eqName(players[i].get_name(), ui->lineEdit_nameFilter->text().toStdString())) {
+            ui->listWidget->addItem(QString::fromStdString(players[i].get_name()));
+        }
+    }
+}
+
+
+void MainWindow::on_lineEdit_teamFilter_textChanged(const QString &arg1)
+{
+    ui->statusBar->showMessage("");
+    ui->listWidget->clear();
+    for (int i = 0; i < players.size(); ++i) {
+        if (eqName(players[i].get_team(), ui->lineEdit_teamFilter->text().toStdString())) {
+            ui->listWidget->addItem(QString::fromStdString(players[i].get_name()));
+        }
+    }
+}
+
+
+void MainWindow::on_tabWidget_tabBarClicked(int index)
+{
+    if (index == 0 && !path.isEmpty()) {
+        ui->lineEdit_nameFilter->setReadOnly(false);
+        ui->lineEdit_teamFilter->setReadOnly(false);
+        ui->lineEdit_countryFilter->setReadOnly(false);
+    }
+    else {
+        ui->lineEdit_nameFilter->setReadOnly(true);
+        ui->lineEdit_teamFilter->setReadOnly(true);
+        ui->lineEdit_countryFilter->setReadOnly(true);
+        ui->lineEdit_nameFilter->clear();
+        ui->lineEdit_teamFilter->clear();
+        ui->lineEdit_countryFilter->clear();
+    }
+}
+
+
+void MainWindow::on_pushButton_showYoungest_clicked()
+{
+    int min = 0;
+    int ind = 0;
+    UpdateTeams();
+    for (int i = 0; i < teams[0].size(); ++i) {
+        min += teams[0][i].get_age();
+    }
+    min /= teams[0].size();
+    for (int i = 1; i < teams.size(); ++i) {
+        int age = 0;
+        for (int j = 0; j < teams[i].size(); ++j) {
+            age += teams[i][j].get_age();
+        }
+        age /= teams[i].size();
+        if (age < min) {
+            min = age;
+            ind = i;
+        }
+    }
+    QWidget *window = new QWidget();
+    window->setWindowTitle("Информация о самой молодой команде");
+    window->setGeometry(QRect(400, 200, 800, 250));
+    window->resize(750, 500);
+    QTableWidget *tableWidget = new QTableWidget();
+    QGridLayout *layout = new QGridLayout(window);
+    layout->addWidget(tableWidget, 0, 0);
+    tableWidget->setColumnCount(7);
+    tableWidget->setShowGrid(true);
+    QStringList headers1;
+            headers1.append("Страна");
+            headers1.append("Команда");
+            headers1.append("ФИО");
+            headers1.append("Игровой номер");
+            headers1.append("Возраст");
+            headers1.append("Рост");
+            headers1.append("Вес");
+    tableWidget->setHorizontalHeaderLabels(headers1);
+    tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
+    tableWidget->horizontalHeader()->setStretchLastSection(true);
+    tableWidget->setEditTriggers(QTableWidget::NoEditTriggers);
+    for (int i = 0; i < teams[ind].size(); ++i) {
+        tableWidget->insertRow(i);
+        tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(teams[ind][i].get_country())));
+        tableWidget->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(teams[ind][i].get_team())));
+        tableWidget->setItem(i, 2, new QTableWidgetItem(QString::fromStdString(teams[ind][i].get_name())));
+        tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(teams[ind][i].get_number())));
+        tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(teams[ind][i].get_age())));
+        tableWidget->setItem(i, 5, new QTableWidgetItem(QString::number(teams[ind][i].get_height())));
+        tableWidget->setItem(i, 6, new QTableWidgetItem(QString::number(teams[ind][i].get_weight())));
+    }
+    tableWidget->resizeColumnsToContents();
+    window->show();
+}
+
+
+void MainWindow::on_lineEdit_countryFilter_textChanged(const QString &arg1)
+{
+    ui->statusBar->showMessage("");
+    ui->listWidget->clear();
+    for (int i = 0; i < players.size(); ++i) {
+        if (eqName(players[i].get_country(), ui->lineEdit_countryFilter->text().toStdString())) {
+            ui->listWidget->addItem(QString::fromStdString(players[i].get_name()));
+        }
+    }
+}
+
+
+void MainWindow::on_pushButton_clear_clicked()
+{
+    ui->statusBar->showMessage("");
+    ui->listWidget->clear();
+    for (int i = 0; i < players.size(); ++i) {
+        ui->listWidget->addItem(QString::fromStdString(players[i].get_name()));
+    }
+    ui->pushButton_edit->setEnabled(false);
+    ui->pushButton_delete->setEnabled(false);
 }
 
