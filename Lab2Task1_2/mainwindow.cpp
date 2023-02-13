@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->tabWidget->setEnabled(false);
     ui->lineEdit_filePath->setReadOnly(true);
     ui->lineEdit_nameFilter->setReadOnly(true);
     ui->lineEdit_teamFilter->setReadOnly(true);
@@ -153,6 +154,7 @@ void MainWindow::on_pushButton_chooseFile_clicked()
             ui->lineEdit_nameFilter->setReadOnly(false);
             ui->lineEdit_teamFilter->setReadOnly(false);
             ui->lineEdit_countryFilter->setReadOnly(false);
+            ui->tabWidget->setEnabled(true);
             ui->pushButton_add->setEnabled(true);
             ui->pushButton_clear->setEnabled(true);
             ui->pushButton_showAll->setEnabled(true);
@@ -165,6 +167,7 @@ void MainWindow::on_pushButton_chooseFile_clicked()
             ui->lineEdit_nameFilter->setReadOnly(true);
             ui->lineEdit_teamFilter->setReadOnly(true);
             ui->lineEdit_countryFilter->setReadOnly(true);
+            ui->tabWidget->setEnabled(false);
             ui->pushButton_edit->setEnabled(false);
             ui->pushButton_add->setEnabled(false);
             ui->pushButton_clear->setEnabled(false);
@@ -180,6 +183,7 @@ void MainWindow::on_pushButton_chooseFile_clicked()
         ui->lineEdit_nameFilter->setReadOnly(true);
         ui->lineEdit_teamFilter->setReadOnly(true);
         ui->lineEdit_countryFilter->setReadOnly(true);
+        ui->tabWidget->setEnabled(false);
         ui->pushButton_edit->setEnabled(false);
         ui->pushButton_add->setEnabled(false);
         ui->pushButton_clear->setEnabled(false);
