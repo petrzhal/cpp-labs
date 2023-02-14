@@ -55,6 +55,14 @@ private slots:
 
     void on_pushButton_clear_clicked();
 
+    void on_pushButton_findHeight_clicked();
+
+    void on_pushButton_findWeight_clicked();
+
+    void on_pushButton_findNum_clicked();
+
+    void on_pushButton_findAge_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

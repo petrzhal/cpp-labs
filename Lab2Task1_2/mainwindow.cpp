@@ -5,6 +5,7 @@
 #include "newplayer.h"
 #include "weight.h"
 #include "height.h"
+#include "search.h"
 #include <QFileDialog>
 #include <fstream>
 #include <QListWidget>
@@ -33,9 +34,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pushButton_showHeight->setEnabled(false);
     ui->pushButton_showWeight->setEnabled(false);
     ui->pushButton_showYoungest->setEnabled(false);
+    ui->pushButton_findAge->setEnabled(false);
+    ui->pushButton_findHeight->setEnabled(false);
+    ui->pushButton_findWeight->setEnabled(false);
+    ui->pushButton_findNum->setEnabled(false);
     ui->pushButton_delete->setIcon(QPixmap("C:/QtLabs/Resources/delete.png"));
     ui->pushButton_add->setIcon(QPixmap("C:/QtLabs/Resources/add.png"));
     ui->pushButton_edit->setIcon(QPixmap("C:/QtLabs/Resources/edit.png"));
+    this->move(QPoint(500, 20));
 }
 
 MainWindow::~MainWindow()
@@ -103,6 +109,15 @@ void MainWindow::on_pushButton_chooseFile_clicked()
     if (path.length()) {
         ui->lineEdit_filePath->setText(path);
         try {
+            std::string stdPath = path.toStdString();
+            std::string fileType;
+            std::copy(stdPath.end() - 4, stdPath.end(), std::back_inserter(fileType));
+
+            for (const auto& ch : stdPath)
+                if (ch <= 0)
+                    throw "Invalid file";
+            if (fileType != ".txt")
+                throw "Invalid file";
             file.open(path.toStdString(), std::ios::in);
             if (!file.is_open())
                 throw "Invalid file";
@@ -161,9 +176,13 @@ void MainWindow::on_pushButton_chooseFile_clicked()
             ui->pushButton_showHeight->setEnabled(true);
             ui->pushButton_showWeight->setEnabled(true);
             ui->pushButton_showYoungest->setEnabled(true);
+            ui->pushButton_findAge->setEnabled(true);
+            ui->pushButton_findHeight->setEnabled(true);
+            ui->pushButton_findWeight->setEnabled(true);
+            ui->pushButton_findNum->setEnabled(true);
         } catch (...) {
-            QMessageBox::critical(this, "Ошибка", "В выбранном файле нарушен формат записи");
             ui->lineEdit_filePath->setText("Файл не выбран");
+            QMessageBox::critical(this, "Ошибка", "В выбранном файле нарушен формат записи данных");
             ui->lineEdit_nameFilter->setReadOnly(true);
             ui->lineEdit_teamFilter->setReadOnly(true);
             ui->lineEdit_countryFilter->setReadOnly(true);
@@ -176,6 +195,10 @@ void MainWindow::on_pushButton_chooseFile_clicked()
             ui->pushButton_showHeight->setEnabled(false);
             ui->pushButton_showWeight->setEnabled(false);
             ui->pushButton_showYoungest->setEnabled(false);
+            ui->pushButton_findAge->setEnabled(false);
+            ui->pushButton_findHeight->setEnabled(false);
+            ui->pushButton_findWeight->setEnabled(false);
+            ui->pushButton_findNum->setEnabled(false);
         }
     }
     else {
@@ -192,6 +215,10 @@ void MainWindow::on_pushButton_chooseFile_clicked()
         ui->pushButton_showHeight->setEnabled(false);
         ui->pushButton_showWeight->setEnabled(false);
         ui->pushButton_showYoungest->setEnabled(false);
+        ui->pushButton_findAge->setEnabled(false);
+        ui->pushButton_findHeight->setEnabled(false);
+        ui->pushButton_findWeight->setEnabled(false);
+        ui->pushButton_findNum->setEnabled(false);
     }
 }
 
@@ -336,27 +363,29 @@ void MainWindow::on_pushButton_add_clicked()
     NewPlayer wind(FormCreationConfig::Add);
     wind.setModal(true);
     wind.exec();
-    players.addEnd(Player);
-    std::fstream file;
-    file.open(path.toStdString(), std::ios::out | std::ios::app);
-    file << "\n" << Player.get_country() << "\n";
-    file << Player.get_team() << "\n";
-    file << Player.get_name() << "\n";
-    file << Player.get_number() << " ";
-    file << Player.get_age() << " ";
-    file << Player.get_height() << " ";
-    file << Player.get_weight();
-    file.close();
-    ui->listWidget->addItem(QString::fromStdString(players.end()->data.get_name()));
-    UpdateTeams();
-    ui->listWidget_teams->clear();
-    for (const auto& team : teams) {
-        ui->listWidget_teams->addItem(QString::fromStdString(team[0].get_team()));
-    }
-    ui->listWidget_countries->clear();
-    UpdateCountries();
-    for (const auto& country : countries) {
-        ui->listWidget_countries->addItem(QString::fromStdString(country[0].get_country()));
+    if (!Player.get_name().empty()) {
+        players.addEnd(Player);
+        std::fstream file;
+        file.open(path.toStdString(), std::ios::out | std::ios::app);
+        file << "\n" << Player.get_country() << "\n";
+        file << Player.get_team() << "\n";
+        file << Player.get_name() << "\n";
+        file << Player.get_number() << " ";
+        file << Player.get_age() << " ";
+        file << Player.get_height() << " ";
+        file << Player.get_weight();
+        file.close();
+        ui->listWidget->addItem(QString::fromStdString(players.end()->data.get_name()));
+        UpdateTeams();
+        ui->listWidget_teams->clear();
+        for (const auto& team : teams) {
+            ui->listWidget_teams->addItem(QString::fromStdString(team[0].get_team()));
+        }
+        ui->listWidget_countries->clear();
+        UpdateCountries();
+        for (const auto& country : countries) {
+            ui->listWidget_countries->addItem(QString::fromStdString(country[0].get_country()));
+        }
     }
     ui->pushButton_edit->setEnabled(false);
     ui->pushButton_delete->setEnabled(false);
@@ -665,8 +694,16 @@ void MainWindow::on_tabWidget_tabBarClicked(int index)
         ui->lineEdit_nameFilter->setReadOnly(false);
         ui->lineEdit_teamFilter->setReadOnly(false);
         ui->lineEdit_countryFilter->setReadOnly(false);
+        ui->pushButton_findAge->setEnabled(true);
+        ui->pushButton_findHeight->setEnabled(true);
+        ui->pushButton_findWeight->setEnabled(true);
+        ui->pushButton_findNum->setEnabled(true);
     }
     else {
+        ui->pushButton_findAge->setEnabled(false);
+        ui->pushButton_findHeight->setEnabled(false);
+        ui->pushButton_findWeight->setEnabled(false);
+        ui->pushButton_findNum->setEnabled(false);
         ui->lineEdit_nameFilter->setReadOnly(true);
         ui->lineEdit_teamFilter->setReadOnly(true);
         ui->lineEdit_countryFilter->setReadOnly(true);
@@ -754,5 +791,115 @@ void MainWindow::on_pushButton_clear_clicked()
     }
     ui->pushButton_edit->setEnabled(false);
     ui->pushButton_delete->setEnabled(false);
+}
+
+int findHeight = 0;
+int findAge = 0;
+int findNumber = 0;
+double findWeight = 0;
+
+void MainWindow::on_pushButton_findHeight_clicked()
+{
+    search wind(SearchOpenConfig::height);
+    wind.setModal(true);
+    wind.exec();
+    if (findHeight) {
+        QVector<Member> finded;
+        for (int i = 0; i < players.size(); ++i) {
+            if (players[i].get_height() == findHeight) {
+                finded.push_back(players[i]);
+            }
+        }
+        if (finded.size()) {
+            ui->listWidget->clear();
+            for (int i = 0; i < finded.size(); ++i) {
+                ui->listWidget->addItem(QString::fromStdString(finded[i].get_name()));
+            }
+        }
+        else {
+            QMessageBox::information(this, "Пусто", "Участников с заданным ростом не найдено");
+        }
+    }
+}
+
+bool eqDouble(double ab1, double ab2) {
+    double e = 0.01;
+    if (ab2 >= ab1 - e && ab2 <= ab1 + e)
+        return true;
+    return false;
+}
+
+void MainWindow::on_pushButton_findWeight_clicked()
+{
+    search wind(SearchOpenConfig::weight);
+    wind.setModal(true);
+    wind.exec();
+    if (findWeight) {
+        QVector<Member> finded;
+        for (int i = 0; i < players.size(); ++i) {
+            if (eqDouble(players[i].get_weight(), findWeight)) {
+                finded.push_back(players[i]);
+            }
+        }
+        if (finded.size()) {
+            ui->listWidget->clear();
+            for (int i = 0; i < finded.size(); ++i) {
+                ui->listWidget->addItem(QString::fromStdString(finded[i].get_name()));
+            }
+        }
+        else {
+            QMessageBox::information(this, "Пусто", "Участников с заданным весом не найдено");
+        }
+    }
+}
+
+
+void MainWindow::on_pushButton_findNum_clicked()
+{
+    search wind(SearchOpenConfig::number);
+    wind.setModal(true);
+    wind.exec();
+    if (findAge) {
+        QVector<Member> finded;
+        for (int i = 0; i < players.size(); ++i) {
+            if (players[i].get_number() == findNumber) {
+                finded.push_back(players[i]);
+            }
+        }
+        if (finded.size()) {
+            ui->listWidget->clear();
+            for (int i = 0; i < finded.size(); ++i) {
+                ui->listWidget->addItem(QString::fromStdString(finded[i].get_name()));
+            }
+        }
+        else {
+            QMessageBox::information(this, "Пусто", "Участников с заданным номером не найдено");
+        }
+    }
+}
+
+
+void MainWindow::on_pushButton_findAge_clicked()
+{
+    search wind(SearchOpenConfig::age);
+    wind.setModal(true);
+    wind.exec();
+    if (findAge) {
+        QVector<Member> finded;
+        for (int i = 0; i < players.size(); ++i) {
+            if (players[i].get_age() == findAge) {
+                finded.push_back(players[i]);
+            }
+        }
+        if (finded.size()) {
+            ui->listWidget->clear();
+            for (int i = 0; i < finded.size(); ++i) {
+                ui->listWidget->addItem(QString::fromStdString(finded[i].get_name()));
+            }
+        }
+        else {
+            QMessageBox::information(this, "Пусто", "Участников с заданным возрастом не найдено");
+        }
+    }
 }
 

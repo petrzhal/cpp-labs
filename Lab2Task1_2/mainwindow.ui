@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>531</width>
-    <height>652</height>
+    <height>743</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,7 +56,7 @@
       <x>20</x>
       <y>70</y>
       <width>241</width>
-      <height>501</height>
+      <height>591</height>
      </rect>
     </property>
     <property name="font">
@@ -65,7 +65,7 @@
      </font>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
@@ -77,7 +77,7 @@
         <x>0</x>
         <y>0</y>
         <width>241</width>
-        <height>501</height>
+        <height>571</height>
        </rect>
       </property>
       <property name="font">
@@ -97,7 +97,7 @@
         <x>0</x>
         <y>0</y>
         <width>241</width>
-        <height>501</height>
+        <height>571</height>
        </rect>
       </property>
       <property name="font">
@@ -117,7 +117,7 @@
         <x>0</x>
         <y>0</y>
         <width>241</width>
-        <height>501</height>
+        <height>571</height>
        </rect>
       </property>
       <property name="font">
@@ -137,6 +137,11 @@
       <height>51</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>Показать участников из
 заданной весовой категории</string>
@@ -146,7 +151,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>580</y>
+      <y>670</y>
       <width>41</width>
       <height>41</height>
      </rect>
@@ -162,7 +167,7 @@
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>580</y>
+      <y>670</y>
       <width>41</width>
       <height>41</height>
      </rect>
@@ -175,7 +180,7 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>580</y>
+      <y>670</y>
       <width>41</width>
       <height>41</height>
      </rect>
@@ -193,6 +198,11 @@
       <height>51</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>Показать участников с ростом
 не ниже заданного</string>
@@ -202,7 +212,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>580</y>
+      <y>670</y>
       <width>91</width>
       <height>41</height>
      </rect>
@@ -243,9 +253,9 @@
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>70</y>
+      <y>60</y>
       <width>21</width>
-      <height>561</height>
+      <height>661</height>
      </rect>
     </property>
     <property name="orientation">
@@ -271,7 +281,7 @@
       <x>510</x>
       <y>10</y>
       <width>21</width>
-      <height>621</height>
+      <height>711</height>
      </rect>
     </property>
     <property name="orientation">
@@ -341,6 +351,11 @@
       <height>51</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>Показать информацию о
 самой молодой команде</string>
@@ -393,7 +408,7 @@
       <x>0</x>
       <y>10</y>
       <width>21</width>
-      <height>621</height>
+      <height>711</height>
      </rect>
     </property>
     <property name="orientation">
@@ -404,7 +419,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>620</y>
+      <y>710</y>
       <width>511</width>
       <height>21</height>
      </rect>
@@ -448,9 +463,86 @@
       <height>51</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>Показать информацию
  о всех участниках</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_findHeight">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>560</y>
+      <width>231</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Поиск по росту</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_findWeight">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>600</y>
+      <width>231</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Поиск по весу</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_findNum">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>640</y>
+      <width>231</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Поиск по игровому номеру</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_findAge">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>680</y>
+      <width>231</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Поиск по возрасту</string>
     </property>
    </widget>
   </widget>

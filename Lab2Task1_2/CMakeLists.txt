@@ -31,6 +31,9 @@ set(PROJECT_SOURCES
         height.cpp
         height.h
         height.ui
+        search.cpp
+        search.h
+        search.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
