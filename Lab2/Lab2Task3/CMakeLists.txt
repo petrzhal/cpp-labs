@@ -22,6 +22,7 @@ set(PROJECT_SOURCES
         stack.cpp
         expression.h
         expression.cpp
+        vector.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
