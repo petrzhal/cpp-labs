@@ -20,7 +20,11 @@ public:
 private slots:
     void on_pushButton_clicked();
 
-    void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
+    void on_pushButton_addExpr_clicked();
+
+    void on_listWidget_itemClicked(QListWidgetItem *item);
+
+    void on_pushButton_2_clicked();
 
 private:
     Ui::MainWindow *ui;

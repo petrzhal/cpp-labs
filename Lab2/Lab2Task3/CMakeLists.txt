@@ -22,7 +22,9 @@ set(PROJECT_SOURCES
         stack.cpp
         expression.h
         expression.cpp
-        vector.cpp
+        newexpression.h
+        newexpression.cpp
+        newexpression.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
