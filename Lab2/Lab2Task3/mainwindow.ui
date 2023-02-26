@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>321</width>
-    <height>588</height>
+    <height>573</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,10 +17,10 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>510</y>
-      <width>191</width>
-      <height>29</height>
+      <x>20</x>
+      <y>470</y>
+      <width>181</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
@@ -40,27 +40,40 @@
    <widget class="QPushButton" name="pushButton_addExpr">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>210</x>
       <y>470</y>
-      <width>191</width>
-      <height>31</height>
+      <width>41</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
-     <string>Добавить выражение</string>
+     <string/>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>548</y>
-      <width>191</width>
-      <height>31</height>
+      <x>20</x>
+      <y>520</y>
+      <width>181</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
      <string>Посчитать все</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_changeExpr">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>470</y>
+      <width>41</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>

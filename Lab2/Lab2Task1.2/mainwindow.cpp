@@ -540,17 +540,21 @@ void MainWindow::on_listWidget_countries_itemClicked(QListWidgetItem *item)
     ui->statusBar->showMessage("Щелкните дважды для просмотра информации");
 }
 
-QPair<int, int> range;
+QPair<double, double> range;
 
 void MainWindow::on_pushButton_showWeight_clicked()
 {
-    range = {0, 0};
+    range = {-1, -1};
     ui->statusBar->showMessage("");
     Weight wind;
     wind.setModal(true);
     wind.exec();
 
-    if (range.first != 0 && range.second != 0) {
+    if (range.first >= 0 && range.second >= 0) {
+        if (range.first > range.second) {
+            QMessageBox::critical(this, "Ошибка", "Некорректная категория");
+            return;
+        }
         QVector<Member> inRangePlayers;
         for (int i = 0; i < players.size(); ++i) {
             if (players[i].get_weight() <= range.second && players[i].get_weight() >= range.first) {
@@ -797,12 +801,16 @@ int findHeight = 0;
 int findAge = 0;
 int findNumber = 0;
 double findWeight = 0;
+bool checked;
 
 void MainWindow::on_pushButton_findHeight_clicked()
 {
+    checked = false;
     search wind(SearchOpenConfig::height);
     wind.setModal(true);
     wind.exec();
+    if (!checked)
+        return;
     if (findHeight) {
         QVector<Member> finded;
         for (int i = 0; i < players.size(); ++i) {
@@ -831,9 +839,12 @@ bool eqDouble(double ab1, double ab2) {
 
 void MainWindow::on_pushButton_findWeight_clicked()
 {
+    checked = false;
     search wind(SearchOpenConfig::weight);
     wind.setModal(true);
     wind.exec();
+    if (!checked)
+        return;
     if (findWeight) {
         QVector<Member> finded;
         for (int i = 0; i < players.size(); ++i) {
@@ -856,9 +867,12 @@ void MainWindow::on_pushButton_findWeight_clicked()
 
 void MainWindow::on_pushButton_findNum_clicked()
 {
+    checked = false;
     search wind(SearchOpenConfig::number);
     wind.setModal(true);
     wind.exec();
+    if (!checked)
+        return;
     if (findNumber) {
         QVector<Member> finded;
         for (int i = 0; i < players.size(); ++i) {
@@ -881,9 +895,12 @@ void MainWindow::on_pushButton_findNum_clicked()
 
 void MainWindow::on_pushButton_findAge_clicked()
 {
+    checked = false;
     search wind(SearchOpenConfig::age);
     wind.setModal(true);
     wind.exec();
+    if (!checked)
+        return;
     if (findAge) {
         QVector<Member> finded;
         for (int i = 0; i < players.size(); ++i) {

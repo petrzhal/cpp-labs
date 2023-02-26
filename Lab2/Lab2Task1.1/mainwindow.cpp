@@ -161,7 +161,7 @@ void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
             headers1.append("Средний балл");
     tableWidget->setHorizontalHeaderLabels(headers1);
 
-    tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
+    tableWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
     tableWidget->horizontalHeader()->setStretchLastSection(true);
     tableWidget->setEditTriggers(QTableWidget::NoEditTriggers);
@@ -199,7 +199,7 @@ void MainWindow::on_pushButton_show_clicked()
             headers1.append("Средний балл");
     tableWidget->setHorizontalHeaderLabels(headers1);
 
-    tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
+    tableWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
     tableWidget->horizontalHeader()->setStretchLastSection(true);
     tableWidget->setEditTriggers(QTableWidget::NoEditTriggers);
@@ -329,7 +329,7 @@ void MainWindow::on_pushButton_showUpperAverage_clicked()
         }
     }
     QWidget *window = new QWidget();
-    window->setWindowTitle("Информация о абитуриентах");
+    window->setWindowTitle("Информация о абитуриентах со средним баллом выше среднего по университету");
     window->setGeometry(QRect(450, 150, 800, 250));
     window->resize(650, 500);
 
@@ -352,7 +352,7 @@ void MainWindow::on_pushButton_showUpperAverage_clicked()
             headers1.append("Средний балл");
     tableWidget->setHorizontalHeaderLabels(headers1);
 
-    tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
+    tableWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
     tableWidget->horizontalHeader()->setStretchLastSection(true);
     tableWidget->setEditTriggers(QTableWidget::NoEditTriggers);
@@ -423,33 +423,45 @@ double findAverage;
 int findRus;
 int findMath;
 int findPhys;
+bool checked;
 
 void MainWindow::on_pushButton_findName_clicked()
 {
+    checked = false;
     Search name("name");
     name.setModal(true);
     name.exec();
 
+    if (!checked)
+        return;
     ui->listWidget->clear();
     for (int i = 0; i < abList.size(); ++i) {
         if (eqName(abList[i].get_name().toStdString(), findName.toStdString()))
             ui->listWidget->addItem(abList[i].get_name());
     }
+    if (!ui->listWidget->count()) {
+        QMessageBox::information(this, "Пусто", "Таких абитуриентов не найдено");
+        for (int i = 0; i < abList.size(); ++i) {
+            ui->listWidget->addItem(abList[i].get_name());
+        }
+    }
 }
 
 void Search::on_pushButton_clicked()
 {
-    try {
+    try {        
+        findAverage = stod(ui->lineEdit->text().toStdString());
+        findRus = findMath = findPhys = stoi(ui->lineEdit->text().toStdString());
         findName = ui->lineEdit->text();
-        findAverage = ui->lineEdit->text().toDouble();
-        findRus = findMath = findPhys = ui->lineEdit->text().toInt();
         if (findName.length()) {
             window()->close();
         }
+        checked = true;
     }
     catch (...) {
         QMessageBox::critical(this, "Ошибка", "Ошибка ввода");
         ui->lineEdit->clear();
+        checked = false;
     }
 }
 
@@ -467,56 +479,92 @@ void MainWindow::on_pushButton_clear_clicked()
 
 void MainWindow::on_pushButton_findAverage_clicked()
 {
+    checked = false;
     Search name("average");
     name.setModal(true);
     name.exec();
 
+    if (!checked)
+        return;
     ui->listWidget->clear();
     for (int i = 0; i < abList.size(); ++i) {
         if (eqAverage(findAverage, abList[i].get_average()))
             ui->listWidget->addItem(abList[i].get_name());
+    }
+    if (!ui->listWidget->count()) {
+        QMessageBox::information(this, "Пусто", "Таких абитуриентов не найдено");
+        for (int i = 0; i < abList.size(); ++i) {
+            ui->listWidget->addItem(abList[i].get_name());
+        }
     }
 }
 
 
 void MainWindow::on_pushButton_findRus_clicked()
 {
+    checked = false;
     Search name("rus");
     name.setModal(true);
     name.exec();
 
+    if (!checked)
+        return;
     ui->listWidget->clear();
     for (int i = 0; i < abList.size(); ++i) {
         if (abList[i].get_rus() == findRus)
             ui->listWidget->addItem(abList[i].get_name());
+    }
+    if (!ui->listWidget->count()) {
+        QMessageBox::information(this, "Пусто", "Таких абитуриентов не найдено");
+        for (int i = 0; i < abList.size(); ++i) {
+            ui->listWidget->addItem(abList[i].get_name());
+        }
     }
 }
 
 
 void MainWindow::on_pushButton_findMath_clicked()
 {
+    checked = false;
     Search name("math");
     name.setModal(true);
     name.exec();
 
+    if (!checked)
+        return;
     ui->listWidget->clear();
     for (int i = 0; i < abList.size(); ++i) {
         if (abList[i].get_math() == findMath)
             ui->listWidget->addItem(abList[i].get_name());
+    }
+    if (!ui->listWidget->count()) {
+        QMessageBox::information(this, "Пусто", "Таких абитуриентов не найдено");
+        for (int i = 0; i < abList.size(); ++i) {
+            ui->listWidget->addItem(abList[i].get_name());
+        }
     }
 }
 
 
 void MainWindow::on_pushButton_findPhys_clicked()
 {
+    checked = false;
     Search name("phys");
     name.setModal(true);
     name.exec();
 
+    if (!checked)
+        return;
     ui->listWidget->clear();
     for (int i = 0; i < abList.size(); ++i) {
         if (abList[i].get_phys() == findPhys)
             ui->listWidget->addItem(abList[i].get_name());
+    }
+    if (!ui->listWidget->count()) {
+        QMessageBox::information(this, "Пусто", "Таких абитуриентов не найдено");
+        for (int i = 0; i < abList.size(); ++i) {
+            ui->listWidget->addItem(abList[i].get_name());
+        }
     }
 }
 

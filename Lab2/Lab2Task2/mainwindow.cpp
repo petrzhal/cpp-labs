@@ -24,6 +24,8 @@ QString path;
 void MainWindow::on_open_triggered()
 {
     path = QFileDialog::getOpenFileName(this, tr("Open File"), "F:/", tr("Text Docs (*.txt)"));
+    if (!path.length())
+        return;
     QFile qfile(path);
     qfile.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream file(&qfile);
@@ -35,6 +37,8 @@ void MainWindow::on_open_triggered()
 void MainWindow::on_save_triggered()
 {
     QFile qfile(path);
+    if (!path.length())
+        return;
     qfile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
     QTextStream file(&qfile);
     file << ui->textEdit->toPlainText();
@@ -45,6 +49,8 @@ void MainWindow::on_save_triggered()
 void MainWindow::on_save_as_triggered()
 {
     path = QFileDialog::getSaveFileName(this, tr("Open File"), "F:/", tr("Text Docs (*.txt)"));
+    if (!path.length())
+        return;
     QFile qfile(path);
     qfile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
     QTextStream file(&qfile);

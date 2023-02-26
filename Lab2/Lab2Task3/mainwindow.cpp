@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->pushButton_addExpr->setIcon(QPixmap("C:/QtLabs/Resources/add1.png"));
+    ui->pushButton_changeExpr->setIcon(QPixmap("C:/QtLabs/Resources/edit.png"));
     GetTests();
     for (const auto& var : tests) {
         ui->listWidget->addItem(var.get_infix());
@@ -140,6 +142,24 @@ void MainWindow::on_pushButton_2_clicked()
         tableWidget->setItem(i, 7, new QTableWidgetItem(QString::number(tests[i].evaluate())));
         tableWidget->resizeColumnsToContents();
         window->show();
+    }
+}
+
+
+void MainWindow::on_pushButton_changeExpr_clicked()
+{
+    int row = ui->listWidget->currentRow();
+    NewExpression wind(tests[row]);
+    wind.setModal(true);
+    wind.exec();
+    if (checked) {
+        Expression expr(newExpr);
+        expr.set_values(abcde[0], abcde[1], abcde[2], abcde[3], abcde[4]);
+        tests[row] = expr;
+        ui->listWidget->clear();
+        for (const auto& var : tests) {
+            ui->listWidget->addItem(var.get_infix());
+        }
     }
 }
 

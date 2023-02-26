@@ -9,6 +9,7 @@ Height::Height(QWidget *parent) :
     ui(new Ui::Height)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Ввод роста");
 }
 
 Height::~Height()
@@ -20,7 +21,6 @@ void Height::on_pushButton_clicked()
 {
     try {
         neededHeight = ui->lineEdit->text().toInt();
-        this->setWindowTitle("Ввод роста");
         window()->close();
     } catch (...) {
         QMessageBox::critical(this, "Ошибка", "Некорректный рост");

@@ -7,6 +7,7 @@ extern int findHeight;
 extern int findAge;
 extern int findNumber;
 extern double findWeight;
+extern bool checked;
 
 search::search(QWidget *parent) :
     QDialog(parent),
@@ -65,10 +66,12 @@ void search::on_pushButton_clicked()
                 QMessageBox::critical(this, "Ошибка", "Некорректные данные");
                 ui->lineEdit->clear();
             }
+            checked = true;
         }
     } catch (...) {
         QMessageBox::critical(this, "Ошибка", "Некорректные данные");
         ui->lineEdit->clear();
+        checked = false;
     }
 }
 

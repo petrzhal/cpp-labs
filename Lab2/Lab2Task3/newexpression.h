@@ -2,6 +2,7 @@
 #define NEWEXPRESSION_H
 
 #include <QDialog>
+#include "expression.h"
 
 namespace Ui {
 class NewExpression;
@@ -13,6 +14,7 @@ class NewExpression : public QDialog
 
 public:
     explicit NewExpression(QWidget *parent = nullptr);
+    explicit NewExpression(Expression&);
     ~NewExpression();
 
 private slots:

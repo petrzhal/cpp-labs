@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>560</width>
-    <height>680</height>
+    <height>691</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -66,7 +66,7 @@
       <x>20</x>
       <y>130</y>
       <width>251</width>
-      <height>501</height>
+      <height>511</height>
      </rect>
     </property>
     <property name="font">
@@ -87,7 +87,7 @@
       <x>300</x>
       <y>360</y>
       <width>231</width>
-      <height>301</height>
+      <height>311</height>
      </rect>
     </property>
     <property name="title">
@@ -106,7 +106,8 @@
       <item>
        <widget class="QPushButton" name="pushButton_show">
         <property name="text">
-         <string>Просмотреть информацию</string>
+         <string>Просмотреть информацию
+обо всех абитуриентах</string>
         </property>
        </widget>
       </item>
@@ -156,7 +157,7 @@
       <x>270</x>
       <y>120</y>
       <width>21</width>
-      <height>551</height>
+      <height>561</height>
      </rect>
     </property>
     <property name="orientation">
@@ -180,7 +181,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>660</y>
+      <y>670</y>
       <width>541</width>
       <height>21</height>
      </rect>
@@ -195,7 +196,7 @@
       <x>540</x>
       <y>10</y>
       <width>21</width>
-      <height>661</height>
+      <height>671</height>
      </rect>
     </property>
     <property name="orientation">
@@ -221,7 +222,7 @@
       <x>0</x>
       <y>10</y>
       <width>20</width>
-      <height>661</height>
+      <height>671</height>
      </rect>
     </property>
     <property name="orientation">
@@ -292,7 +293,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>630</y>
+      <y>640</y>
       <width>251</width>
       <height>31</height>
      </rect>
