@@ -1,26 +1,26 @@
 namespace it {
     template<class T>
     class iterator {
-    private:
+    protected:
         T *it;
     public:
         iterator() {
             it = nullptr;
         }
 
-        iterator(T *iter) {
+        explicit iterator(T *iter) {
             it = iter;
         }
 
-        virtual void operator++() {
+        void operator++() {
             it++;
         }
 
-        virtual void operator--() {
+        void operator--() {
             it--;
         }
 
-        virtual T *operator->() {
+        T *operator->() {
             return it;
         }
 
@@ -28,17 +28,22 @@ namespace it {
             return it != other.it;
         }
 
-        virtual iterator& operator=(const iterator &other) {
+        iterator& operator=(const iterator &other) {
             it = other.it;
             return *this;
         }
 
-        virtual iterator operator+(int n) {
+        iterator& operator=(const iterator *other) {
+            it = other->it;
+            return *this;
+        }
+
+        iterator operator+(int n) {
             it += n;
             return *this;
         }
 
-        virtual T &operator*() {
+        T &operator*() {
             return *it;
         }
     };
@@ -52,30 +57,42 @@ namespace it {
             it = nullptr;
         }
 
-        const_iterator(T *iter) {
+        explicit const_iterator(T *iter) {
             it = iter;
         }
 
-        const T *operator->() override {
+        const T *operator->() {
             return it;
         }
 
-        bool operator!=(const const_iterator &other) override {
+        bool operator!=(const const_iterator &other) {
             return it != other.it;
         }
 
-        const_iterator& operator=(const const_iterator &other) override {
+        const_iterator& operator=(const const_iterator &other) {
             it = other.it;
             return *this;
         }
 
-        const_iterator operator+(int n) override {
+        const_iterator operator+(int n) {
             it += n;
             return *this;
         }
 
-        const T &operator*() override {
+        const T &operator*() {
             return *it;
         }
     };
+
+    //returns iterator from pointer _ptr
+    template<class T>
+    iterator<T> IterFromPointer(T* ptr) {
+        return *(new iterator<T>(ptr));
+    }
+
+    //returns const_iterator from const pointer _ptr
+    template<class T>
+    const_iterator<T> cIterFromPointer(const T* _ptr) {
+        return *(new const_iterator<T>(_ptr));
+    }
 };

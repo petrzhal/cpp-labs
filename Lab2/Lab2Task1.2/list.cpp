@@ -1,185 +1,184 @@
 #include <iostream>
 
-template<class T>
-struct element {
-    T data;
-    element* next;
-    element* prev;
-};
+#define null -1
 
 template<class T>
 class list {
 private:
-    element<T>* _begin;
-    element<T>* _end;
-    int count;
+    struct elem {
+        T data;
+        int next;
+        int prev;
+    };
 
-    element<T>* Move(int ind) {
-        element<T>* it = _begin;
+    elem *_arr;
+    int _begin;
+    int _end;
+    int _size;
+
+    int Move(int ind) {
+        int it = _begin;
         for (int i = 0; i < ind; ++i) {
-            it = it->next;
+            it = _arr[it].next;
         }
         return it;
     }
 
     bool IsCorrectIndex(int i) {
-        return (i <= count) && (i >= 0);
+        return (i <= _size) && (i >= 0);
     }
 
 public:
     list() {
-        _begin = nullptr;
-        _end = nullptr;
-        count = 0;
+        _arr = nullptr;
+        _begin = null;
+        _end = null;
+        _size = 0;
     }
 
-    list(const list& lst) {
+    list(const list &lst) {
+        elem *newArr = new elem[lst._size];
+        for (int i = 0; i < lst._size; ++i) {
+            newArr[i] = lst._arrp[i];
+        }
         _begin = lst.begin;
         _end = lst.end;
-        count = lst.count;
+        _size = lst._size;
     }
 
-    void addEnd(const T& data) {
-        auto elem = new element<T>();
-        elem->data = data;
-        if (!count) {
-            elem->prev = nullptr;
-            elem->next = nullptr;
-            _begin = _end = elem;
+    void push_back(const T &data) {
+        elem *newArr = new elem[_size + 1];
+        for (int i = 0; i < _size; ++i) {
+            newArr[i] = _arr[i];
         }
-        else {
-            elem->prev = _end;
-            elem->next = nullptr;
-            _end->next = elem;
-            _end = elem;
+        newArr[_size].data = data;
+        if (!_size) {
+            newArr[_size].prev = -1;
+            newArr[_size].next = -1;
+            _begin = _end = _size;
+        } else {
+            newArr[_size].prev = _end;
+            newArr[_size].next = -1;
+            newArr[_end].next = _size;
+            _end = _size;
         }
-        count++;
+        _arr = newArr;
+        _size++;
     }
 
-    void addBegin(const T& data) {
-        auto elem = new element<T>();
-        elem->data = data;
-        if (!count) {
-            elem->prev = nullptr;
-            elem->next = nullptr;
-            _begin = _end = elem;
+    void push_front(const T &data) {
+        elem *newArr = new elem[_size + 1];
+        for (int i = 0; i < _size; ++i) {
+            newArr[i] = _arr[i];
         }
-        else {
-            elem->prev = nullptr;
-            elem->next = _begin;
-            _begin->prev = elem;
-            _begin = elem;
+        newArr[_size].data = data;
+        if (!_size) {
+            newArr[_size].prev = null;
+            newArr[_size].next = null;
+            _begin = _end = _size;
+        } else {
+            newArr[_size].prev = null;
+            newArr[_size].next = _begin;
+            newArr[_begin].prev = 0;
+            _begin = _size;
         }
-        count++;
+        _arr = newArr;
+        _size++;
     }
 
-    void insert(const T& data, int ind) {
-        if (!IsCorrectIndex(ind))
-            return;
+    void insert(const T &data, int index) {
+        if (!IsCorrectIndex(index))
+            throw std::out_of_range("index out of range");
 
-        if (ind == count) {
-            addEnd(data);
+        if (index == _size) {
+            push_back(data);
             return;
-        }
-        else if (ind == 0) {
-            addBegin(data);
+        } else if (index == 0) {
+            push_front(data);
             return;
-        }
-        else {
-            auto elem = new element<T>();
-            elem->data = data;
-            element<T> *elemPrev = Move(ind - 1);
-            element<T> *elemNext = Move(ind);
-            elem->prev = elemPrev;
-            elem->next = elemNext;
-            elemPrev->next = elem;
-            elemNext->prev = elem;
-            count++;
+        } else {
+            elem *newArr = new T[_size + 1];
+            for (int i = 0; i < _size + 1; ++i) {
+                newArr[i] = _arr[i];
+            }
+            newArr[_size].data = data;
+            int elemPrev = Move(index - 1);
+            int elemNext = Move(index);
+            newArr[_size].prev = elemPrev;
+            newArr[_size].next = elemNext;
+            newArr[elemPrev] = _size;
+            newArr[elemNext] = _size;
+            _arr = newArr;
+            _size++;
         }
     }
 
-    void erase(int i) {
-        if (!count || (i < 0 && i >= count))
+    void erase(int index) {
+        if (!_size || (index < 0 && index >= _size))
             return;
-        if (!i) {
-            element<T> *elem = Move(i);
-            element<T> *next = elem->next;
-            _begin = next;
-            next->prev = nullptr;
-            delete elem;
-            count--;
+        if (!index) {
+            _arr[_arr[_begin].next].prev = null;
+            _begin = Move(index + 1);
+        } else if (index == _size - 1) {
+            _arr[Move(_end - 1)].next = null;
+            _end = Move(index - 1);
+        } else {
+            int next = _arr[Move(index)].next;
+            int prev = _arr[Move(index)].prev;
+            _arr[Move(index - 1)].next = next;
+            _arr[Move(index + 1)].prev = prev;
         }
-        else if (i == count - 1) {
-            element<T> *elem = Move(i);
-            element<T> *prev = elem->prev;
-            _end = prev;
-            prev->next = nullptr;
-            delete elem;
-            count--;
-        }
-        else {
-            element<T> *elem = Move(i);
-            element<T> *next = elem->next;
-            element<T> *prev = elem->prev;
-            next->prev = prev;
-            prev->next = next;
-            delete elem;
-            count--;
-        }
+        _size--;
     }
 
     void clear() {
-        element<T>* cur = _begin;
-        for (int i = 0; i < count - 1; ++i) {
-            cur = cur->next;
-            delete cur->prev;
-        }
-        count = 0;
-        _begin = nullptr;
-        _end = nullptr;
+        delete[] _arr;
+        _size = 0;
+        _begin = null;
+        _end = null;
     }
 
-    T& getElement(int ind) {
-        element<T>* elem = _begin;
-        for (int i = 0; i < ind; ++i) {
-            elem = elem->next;
-        }
-        return elem->data;
+    T &at(int index) {
+        if (!IsCorrectIndex(index))
+            throw std::out_of_range("index out of range");
+        return _arr[Move(index)].data;
     }
 
-    void print(const std::string& message) {
+    void print(const std::string &message) {
         std::cout << message;
-        for (int i = 0; i < count; ++i) {
-            std::cout << getElement(i) << " ";
+        for (int i = 0; i < _size; ++i) {
+            std::cout << at(i) << " ";
         }
     }
 
     void print() {
-        for (int i = 0; i < count; ++i) {
-            std::cout << getElement(i) << " ";
+        for (int i = 0; i < _size; ++i) {
+            std::cout << at(i) << " ";
         }
+        std::cout << "\n";
     }
 
-     [[nodiscard]] int size() const {
-        return count;
+    [[nodiscard]] int size() const {
+        return _size;
     }
 
-    element<T>* begin() {
-        return this->_begin;
+    elem *begin() {
+        return &_arr[_begin];
     }
 
-    element<T>* end() {
-        return this->_end;
+    elem *end() {
+        return &_arr[_end];
     }
 
-    list<T>& operator=(const list<T> &other) {
+    list<T> &operator=(const list<T> &other) {
+        _arr = other._arr;
         _begin = other._begin;
         _end = other._end;
-        count = other.count;
+        _size = other._size;
         return *this;
     }
 
-    T& operator[](int ind) {
-        return getElement(ind);
+    T &operator[](int ind) {
+        return at(ind);
     }
 };

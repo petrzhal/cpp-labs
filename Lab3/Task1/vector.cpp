@@ -2,7 +2,7 @@
 #include "iterator.cpp"
 
 template<class T>
-class vector : public it::iterator<T>
+class vector : public it::iterator<T>, public it::const_iterator<T>
 {
     T* _arr;
     size_t _size;
@@ -178,19 +178,19 @@ public:
     }
 
     it::iterator<T> begin() {
-        return _arr;
+        return it::IterFromPointer(_arr);
     }
 
     it::iterator<T> end() {
-        return _arr + _size;
+        return it::IterFromPointer(_arr + _size);
     }
 
     it::const_iterator<T> begin() const {
-        return _arr;
+        return it::cIterFromPointer(_arr);
     }
 
     it::const_iterator<T> end() const {
-        return _arr + _size;
+        return it::cIterFromPointer(_arr + _size);
     }
 
     T& operator[](int index)  {
