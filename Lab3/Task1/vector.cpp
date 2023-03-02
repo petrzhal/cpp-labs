@@ -128,28 +128,6 @@ public:
             (_arr + i)->~T();
         }
         _size -= count;
-        /*size_t count = 0;
-        for (auto it = begin; it != end; ++it) {
-            ++count;
-        }
-        T* _newArr = reinterpret_cast<T*>(new int8_t[_size * sizeof(T)]);
-        int j = 0;
-        for (size_t i = 0; i < _size; ++i) {
-            if ((_arr + i) == begin) {
-                auto iter = begin;
-                while (iter != end) {
-                    i++;
-                    iter++;
-                }
-            }
-            new (_newArr + j++) T(_arr[i]);
-        }
-        for (int i = 0; i < _size; ++i) {
-            (_arr + i)->~T();
-        }
-        delete[] reinterpret_cast<int8_t*>(_arr);
-        _arr = _newArr;
-        _size -= count;*/
     }
 
     [[nodiscard]] size_t max_size() const {
