@@ -12,12 +12,24 @@ namespace it {
             it = iter;
         }
 
-        void operator++() {
+        iterator<T>& operator++() {
             it++;
+            return *this;
         }
 
-        void operator--() {
+        iterator<T>& operator--() {
             it--;
+            return *this;
+        }
+
+        iterator<T>& operator++(int) {
+            it++;
+            return *this;
+        }
+
+        iterator<T>& operator--(int) {
+            it--;
+            return *this;
         }
 
         T *operator->() {
@@ -43,8 +55,17 @@ namespace it {
             return *this;
         }
 
+        iterator operator-(int n) {
+            it -= n;
+            return *this;
+        }
+
         T &operator*() {
             return *it;
+        }
+
+        T* get() {
+            return it;
         }
     };
 
@@ -74,25 +95,20 @@ namespace it {
             return *this;
         }
 
-        const_iterator operator+(int n) {
-            it += n;
-            return *this;
-        }
-
         const T &operator*() {
             return *it;
         }
     };
 
-    //returns iterator from pointer _ptr
+    //create iterator from pointer
     template<class T>
     iterator<T> IterFromPointer(T* ptr) {
         return *(new iterator<T>(ptr));
     }
 
-    //returns const_iterator from const pointer _ptr
+    //create const_iterator from pointer
     template<class T>
-    const_iterator<T> cIterFromPointer(const T* _ptr) {
+    const_iterator<T> cIterFromPointer(T* _ptr) {
         return *(new const_iterator<T>(_ptr));
     }
 };
