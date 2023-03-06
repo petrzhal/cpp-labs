@@ -2,7 +2,7 @@
 #include "iterator.cpp"
 
 template<typename T>
-class vector : public it::const_iterator<T>
+class vector : public it::reverse_iterator<T>, public it::const_iterator<T>
 {
     T* _arr;
     size_t _size;
@@ -10,34 +10,138 @@ class vector : public it::const_iterator<T>
 public:
     vector();
     ~vector();
-    vector(const vector& other);
-    vector(std::initializer_list<T> vec);
-    vector& operator=(const vector& other);
-    void push_back(const T& value);
+    vector(const vector&);
+    vector(std::initializer_list<T>);
+    vector& operator=(const vector&);
+    void push_back(const T&);
     void pop_back();
     [[nodiscard]] size_t size() const;
-    void reserve(int n);
-    void resize(int n, const T& value = T());
-    void erase(it::iterator<T> _iter);
-    void erase(it::iterator<T> begin, it::iterator<T> end);
+    void reserve(int);
+    void resize(int, const T& = T());
+    void erase(it::iterator<T>);
+    void erase(it::iterator<T>, it::iterator<T>);
+    void insert(it::iterator<T>, const T& value);
+    template<typename InputIterator>
+    void insert(const it::iterator<T>&, InputIterator, InputIterator);
     [[nodiscard]] size_t max_size() const;
-    void assign(size_t count, const T& value);
+    void assign(size_t, const T&);
     template<class... Args>
-    void emplace(it::iterator<T> pos, Args&&... args);
-    template< class... Args >
-    void emplace_back( Args&&... args );
+    void emplace(it::iterator<T>, Args&&...);
+    template< class... Args>
+    void emplace_back(Args&&...);
     void clear();
     [[nodiscard]] size_t capacity();
+    void swap(const vector<T>&);
     T& back();
-    T& data();
+    T* data();
+    T& front();
+    bool empty();
     it::iterator<T> begin();
     it::iterator<T> end();
+    it::reverse_iterator<T> rbegin();
+    it::reverse_iterator<T> rend();
     it::const_iterator<T> cbegin() const;
     it::const_iterator<T> cend() const;
-    T& operator[](int index);
-    const T& operator[](int index) const;
-    T& at(int index) const;
+    T& operator[](int);
+    const T& operator[](int) const;
+    T& at(int) const;
 };
+
+template<typename T>
+it::reverse_iterator<T> vector<T>::rbegin() {
+    return it::reverse_iterator<T>(_arr + _size - 1);
+}
+
+template<typename T>
+it::reverse_iterator<T> vector<T>::rend() {
+    return it::reverse_iterator<T>(_arr - 1);
+}
+
+template<typename T>
+void vector<T>::swap(const vector<T> & other) {
+    auto swpArr = _arr;
+    _arr = other._arr;
+    other._arr = swpArr;
+    size_t swpCap = _capacity;
+    _capacity = other._capacity;
+    other._capacity = swpCap;
+    size_t swpSize = _size;
+    _size = other._size;
+    other._size = swpSize;
+}
+
+template<typename T>
+void vector<T>::insert(it::iterator<T> _pos, const T& value) {
+    it::iterator<T> it = vector::begin();
+    size_t ind = 0;
+    while (it != _pos) {
+        ind++;
+        it++;
+    }
+    if (_capacity <= _size + 1)
+        vector::reserve(_capacity * 2);
+    it = vector::begin();
+    for (int i = 0; i < ind; ++i) {
+        it++;
+    }
+    size_t i;
+    try {
+        for (i = _size; i > ind; --i) {
+            new (&_arr[i]) T(_arr[i - 1]);
+            (_arr + i - 1)->~T();
+        }
+        new (&*it) T(value);
+        _size++;
+    } catch (...) {
+        vector::clear();
+        throw;
+    }
+}
+
+template<typename T>
+template<typename InputIterator>
+void vector<T>::insert(const it::iterator<T>& _pos, InputIterator _other_beg, InputIterator _other_end) {
+    auto other = _other_beg;
+    size_t count = 0;
+    while (other != _other_end) {
+        other++;
+        count++;
+    }
+    it::iterator<T> it = vector::begin();
+    size_t ind = 0;
+    while (it != _pos) {
+        ind++;
+        it++;
+    }
+    if (_size + count >= _capacity)
+        vector::reserve(_capacity * 2);
+    try {
+        for (size_t i = _size - 1 + count; i > ind; --i) {
+            new (&_arr[i]) T(_arr[i - count]);
+            (_arr + i - count)->~T();
+        }
+        other = _other_beg;
+        for (size_t i = ind; other != _other_end; ++i) {
+            new (_arr + i) T(*(other++));
+        }
+        _size += count;
+    } catch (...) {
+        vector::clear();
+        throw;
+    }
+}
+
+template<typename T>
+bool vector<T>::empty() {
+    if (!_size)
+        return true;
+    return false;
+}
+
+template<typename T>
+T &vector<T>::front() {
+    return _arr[0];
+}
 
 template<typename T>
 template<typename... Args>
@@ -64,12 +168,17 @@ vector<T>::~vector() {
 template<typename T>
 vector<T>::vector(const vector& other) {
     if (this != &other) {
-        _arr = reinterpret_cast<T*>(new int8_t[other._capacity * sizeof(T)]);
-        for (int i = 0; i < other._size; ++i) {
-            new (_arr + i) T(other[i]);
+        try {
+            _arr = reinterpret_cast<T *>(new int8_t[other._capacity * sizeof(T)]);
+            for (int i = 0; i < other._size; ++i) {
+                new (_arr + i) T(other._arr[i]);
+            }
+            _size = other._size;
+            _capacity = other._capacity;
+        } catch (...) {
+            vector::clear();
+            throw;
         }
-        _size = other._size;
-        _capacity = other._capacity;
     }
 }
 
@@ -86,9 +195,17 @@ vector<T>::vector(std::initializer_list<T> vec) {
 template<typename T>
 vector<T>& vector<T>::operator=(const vector& other) {
     if (this != &other) {
-        _arr = other._arr;
-        _size = other._size;
-        _capacity = other._capacity;
+        try {
+            vector::clear();
+            vector::reserve(other._capacity);
+            vector::resize(other._size);
+            for (int i = 0; i < other._size; ++i) {
+                new (_arr + i) T(other._arr[i]);
+            }
+        } catch (...) {
+            vector::clear();
+            throw;
+        }
     }
     return *this;
 }
@@ -114,6 +231,8 @@ template<typename T>
 
 template<typename T>
 void vector<T>::reserve(int n) {
+    if (n <= _capacity)
+        return;
     T* new_arr = reinterpret_cast<T*>(new int8_t [n * sizeof(T)]);
     int i;
     try {
@@ -139,10 +258,15 @@ void vector<T>::resize(int n, const T& value) {
         }
     }
     else if (n > _size) {
-        if (n <= _capacity)
-            reserve(_capacity * 2);
-        for (int i = _size; i < n; ++i) {
-            new (_arr + i) T(value);
+        try {
+            if (n <= _capacity)
+                reserve(_capacity * 2);
+            for (int i = _size; i < n; ++i) {
+                new (_arr + i) T(value);
+            }
+        } catch (...) {
+            vector::clear();
+            throw;
         }
     }
     _size = n;
@@ -155,11 +279,16 @@ void vector<T>::erase(it::iterator<T> _iter) {
         ind++;
     }
     _iter->~T();
-    for (size_t i = ind + 1; i < _size; ++i) {
-        new (_arr + i - 1) T(_arr[i]);
-        (_arr + i)->~T();
+    try {
+        for (size_t i = ind + 1; i < _size; ++i) {
+            new (_arr + i - 1) T(_arr[i]);
+            (_arr + i)->~T();
+        }
+        _size--;
+    } catch (...) {
+        vector::clear();
+        throw;
     }
-    _size--;
 }
 
 template<typename T>
@@ -182,7 +311,7 @@ void vector<T>::erase(it::iterator<T> begin, it::iterator<T> end) {
 
 template<typename T>
 [[nodiscard]] size_t vector<T>::max_size() const {
-    return 1;
+    return ULLONG_MAX;
 }
 
 template<typename T>
@@ -196,8 +325,8 @@ void vector<T>::assign(size_t count, const T& value) {
 template<typename T>
 template<typename... Args>
 void vector<T>::emplace(it::iterator<T> pos, Args&&... args) {
-    pos.get()->~T();
-    new (pos.get()) T(args...);
+    pos.get_pointer()->~T();
+    new (pos.get_pointer()) T(args...);
 }
 
 template<typename T>
@@ -222,28 +351,28 @@ T& vector<T>::back() {
 }
 
 template<typename T>
-T& vector<T>::data() {
-    return _arr[0];
+T* vector<T>::data() {
+    return &_arr[0];
 }
 
 template<typename T>
 it::iterator<T> vector<T>::begin() {
-    return it::IterFromPointer(_arr);
+    return it::iterator(_arr);
 }
 
 template<typename T>
 it::iterator<T> vector<T>::end() {
-    return it::IterFromPointer(_arr + _size);
+    return it::iterator(_arr + _size);
 }
 
 template<typename T>
 it::const_iterator<T> vector<T>::cbegin() const {
-    return it::cIterFromPointer(_arr);
+    return it::const_iterator(_arr);
 }
 
 template<typename T>
 it::const_iterator<T> vector<T>::cend() const {
-    return it::cIterFromPointer(_arr + _size);
+    return it::const_iterator(_arr + _size);
 }
 
 template<typename T>

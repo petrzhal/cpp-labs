@@ -1,11 +1,54 @@
+#include <iostream>
 namespace it {
     template<class T>
-    class iterator {
+    class const_iterator {
+    private:
+        const T* it;
+    public:
+        const_iterator() {
+            it = nullptr;
+        }
+
+        const_iterator(const const_iterator<T>& other) {
+            this->it = other.it;
+        }
+
+        explicit const_iterator(T *iter) {
+            it = iter;
+        }
+
+        const T *operator->() {
+            return it;
+        }
+
+        bool operator!=(const const_iterator &other) {
+            return it != other.it;
+        }
+
+        const_iterator& operator=(const const_iterator &other) {
+            it = other.it;
+            return *this;
+        }
+
+        const T &operator*() {
+            return *it;
+        }
+        const T* get_pointer() {
+            return it;
+        }
+    };
+
+    template<class T>
+    class iterator : public const_iterator<T> {
     protected:
         T *it;
     public:
         iterator() {
             it = nullptr;
+        }
+
+        iterator(const iterator<T>& other) {
+            this->it = other.it;
         }
 
         explicit iterator(T *iter) {
@@ -36,8 +79,12 @@ namespace it {
             return it;
         }
 
-        virtual bool operator!=(const iterator &other) {
-            return it != other.it;
+        virtual bool operator!=(iterator other) {
+            return this->it != other.it;
+        }
+
+        bool operator==(iterator other) {
+            return this->it == other.it;
         }
 
         iterator& operator=(const iterator &other) {
@@ -60,55 +107,98 @@ namespace it {
             return *this;
         }
 
+        size_t operator-(iterator n) {
+            return it - n.it;
+        }
+
         T &operator*() {
             return *it;
         }
 
-        T* get() {
+        T* get_pointer() const {
             return it;
         }
     };
 
     template<class T>
-    class const_iterator : public iterator<T> {
-    private:
-        const T* it;
+    class reverse_iterator : public iterator<T> {
+    protected:
+        T *it;
     public:
-        const_iterator() {
+        reverse_iterator() {
             it = nullptr;
         }
 
-        explicit const_iterator(T *iter) {
+        explicit reverse_iterator(const iterator<T>& other) {
+            this->it = other.it;
+        }
+
+        explicit reverse_iterator(T *iter) {
             it = iter;
         }
 
-        const T *operator->() {
+        reverse_iterator<T>& operator++() {
+            it--;
+            return *this;
+        }
+
+        reverse_iterator<T>& operator--() {
+            it++;
+            return *this;
+        }
+
+        reverse_iterator<T>& operator++(int) {
+            it--;
+            return *this;
+        }
+
+        reverse_iterator<T>& operator--(int) {
+            it++;
+            return *this;
+        }
+
+        T *operator->() {
             return it;
         }
 
-        bool operator!=(const const_iterator &other) {
-            return it != other.it;
+        virtual bool operator!=(reverse_iterator other) {
+            return this->it != other.it;
         }
 
-        const_iterator& operator=(const const_iterator &other) {
+        bool operator==(reverse_iterator other) {
+            return this->it == other.it;
+        }
+
+        reverse_iterator& operator=(const reverse_iterator &other) {
             it = other.it;
             return *this;
         }
 
-        const T &operator*() {
+        reverse_iterator& operator=(const reverse_iterator *other) {
+            it = other->it;
+            return *this;
+        }
+
+        reverse_iterator operator+(int n) {
+            it += n;
+            return *this;
+        }
+
+        reverse_iterator operator-(int n) {
+            it -= n;
+            return *this;
+        }
+
+        size_t operator-(reverse_iterator n) {
+            return it - n.it;
+        }
+
+        T &operator*() {
             return *it;
         }
+
+        T* get_pointer() const {
+            return it;
+        }
     };
-
-    //create iterator from pointer
-    template<class T>
-    iterator<T> IterFromPointer(T* ptr) {
-        return *(new iterator<T>(ptr));
-    }
-
-    //create const_iterator from pointer
-    template<class T>
-    const_iterator<T> cIterFromPointer(T* _ptr) {
-        return *(new const_iterator<T>(_ptr));
-    }
 };
