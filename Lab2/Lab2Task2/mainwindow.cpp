@@ -80,6 +80,8 @@ QPair<int, int> Bracketscorrect(const QString& str) {
     int indFigure;
     int indSquare;
     int indRound;
+
+    int kal[3]{};
     bool err1 = false;
     for (int i = 0; i < str.size(); ++i) {
         if (str[i] == figL)
@@ -89,6 +91,7 @@ QPair<int, int> Bracketscorrect(const QString& str) {
                 stackFigure.pop();
             else {
                 indFigure =  i + 1;
+                kal[0] = indFigure;
                 err1 = true;
                 break;
             }
@@ -98,7 +101,7 @@ QPair<int, int> Bracketscorrect(const QString& str) {
         while (stackFigure.size() != 1) {
             stackFigure.pop();
         }
-        indFigure =  stackFigure.top() + 1;
+        indFigure = stackFigure.top() + 1;
     }
     else if (!err1) {
         indFigure = 0;
@@ -113,6 +116,7 @@ QPair<int, int> Bracketscorrect(const QString& str) {
                 stackSquare.pop();
             else {
                 indSquare =  i + 1;
+                kal[1] = indSquare;
                 err2 = true;
                 break;
             }
@@ -122,7 +126,7 @@ QPair<int, int> Bracketscorrect(const QString& str) {
         while (stackSquare.size() != 1) {
             stackSquare.pop();
         }
-        indSquare =  stackSquare.top() + 1;
+        indSquare = stackSquare.top() + 1;
     }
     else if (!err2) {
         indSquare = 0;
@@ -136,6 +140,7 @@ QPair<int, int> Bracketscorrect(const QString& str) {
                 stackRound.pop();
             else {
                 indRound =  i + 1;
+                kal[2] = indRound;
                 err3 = true;
                 break;
             }
@@ -150,15 +155,18 @@ QPair<int, int> Bracketscorrect(const QString& str) {
     else if (!err3) {
         indRound = 0;
     }
-
     int res;
-    if (indFigure && indRound && indSquare) {
-        res = 0;
+    if (kal[0] || kal[1] || kal[2]) {
+        res = std::min(std::min(kal[0], kal[1], cmp), kal[2], cmp);
     }
     else {
-        res = std::min(std::min(indFigure, indRound, cmp), indSquare, cmp);
+        if (indFigure && indRound && indSquare) {
+            res = 0;
+        }
+        else {
+            res = std::min(std::min(indFigure, indRound, cmp), indSquare, cmp);
+        }
     }
-
     int row = 1;
     int col = 0;
     QPair<int, int> pos;

@@ -49,7 +49,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-list<Member> players;
+list players;
 QVector<QVector<Member>> teams;
 QVector<QVector<Member>> countries;
 QString path;
@@ -149,7 +149,7 @@ void MainWindow::on_pushButton_chooseFile_clicked()
 
                 std::getline(file, str);
 
-                players.addEnd(member);
+                players.push_back(member);
             }
             file.close();
 
@@ -364,7 +364,7 @@ void MainWindow::on_pushButton_add_clicked()
     wind.setModal(true);
     wind.exec();
     if (!Player.get_name().empty()) {
-        players.addEnd(Player);
+        players.push_back(Player);
         std::fstream file;
         file.open(path.toStdString(), std::ios::out | std::ios::app);
         file << "\n" << Player.get_country() << "\n";
@@ -671,6 +671,10 @@ bool eqName(std::string str1, std::string str2) {
 void MainWindow::on_lineEdit_nameFilter_textChanged(const QString &arg1)
 {
     ui->statusBar->showMessage("");
+    ui->pushButton_edit->setEnabled(false);
+    ui->pushButton_delete->setEnabled(false);
+    ui->lineEdit_teamFilter->clear();
+    ui->lineEdit_countryFilter->clear();
     ui->listWidget->clear();
     for (int i = 0; i < players.size(); ++i) {
         if (eqName(players[i].get_name(), ui->lineEdit_nameFilter->text().toStdString())) {
@@ -683,6 +687,10 @@ void MainWindow::on_lineEdit_nameFilter_textChanged(const QString &arg1)
 void MainWindow::on_lineEdit_teamFilter_textChanged(const QString &arg1)
 {
     ui->statusBar->showMessage("");
+    ui->pushButton_edit->setEnabled(false);
+    ui->pushButton_delete->setEnabled(false);
+    ui->lineEdit_nameFilter->clear();
+    ui->lineEdit_countryFilter->clear();
     ui->listWidget->clear();
     for (int i = 0; i < players.size(); ++i) {
         if (eqName(players[i].get_team(), ui->lineEdit_teamFilter->text().toStdString())) {
@@ -777,6 +785,10 @@ void MainWindow::on_pushButton_showYoungest_clicked()
 void MainWindow::on_lineEdit_countryFilter_textChanged(const QString &arg1)
 {
     ui->statusBar->showMessage("");
+    ui->pushButton_edit->setEnabled(false);
+    ui->pushButton_delete->setEnabled(false);
+    ui->lineEdit_nameFilter->clear();
+    ui->lineEdit_teamFilter->clear();
     ui->listWidget->clear();
     for (int i = 0; i < players.size(); ++i) {
         if (eqName(players[i].get_country(), ui->lineEdit_countryFilter->text().toStdString())) {

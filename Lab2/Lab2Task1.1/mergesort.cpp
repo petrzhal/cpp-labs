@@ -4,7 +4,7 @@
 #include <memory>
 
 template<typename T>
-void merge_sort(T array[], std::size_t size, bool(*cmp) (const T&, const T&)) noexcept
+void merge_sort(T array[], std::size_t size, bool(*cmp) (const T&, const T&))
 {
     if (size > 1)
     {

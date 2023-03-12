@@ -41,7 +41,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-list<abiturient> abList;
+list abList;
 QString fileName;
 
 void MainWindow::on_pushButton_chooseFile_clicked()
@@ -447,11 +447,17 @@ void MainWindow::on_pushButton_findName_clicked()
     }
 }
 
+bool kostyl;
+
 void Search::on_pushButton_clicked()
 {
-    try {        
-        findAverage = stod(ui->lineEdit->text().toStdString());
-        findRus = findMath = findPhys = stoi(ui->lineEdit->text().toStdString());
+    findAverage = findRus = findMath = findPhys = 0;
+    findName.clear();
+    try {
+        if (kostyl) {
+            findAverage = stod(ui->lineEdit->text().toStdString());
+            findRus = findMath = findPhys = stoi(ui->lineEdit->text().toStdString());
+        }
         findName = ui->lineEdit->text();
         if (findName.length()) {
             window()->close();

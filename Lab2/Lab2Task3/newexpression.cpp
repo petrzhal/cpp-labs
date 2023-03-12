@@ -2,6 +2,7 @@
 #include "ui_newexpression.h"
 #include <QMessageBox>
 #include <QStack>
+#include "stack.cpp"
 
 extern QString newExpr;
 extern double abcde[5];
@@ -45,9 +46,9 @@ bool cmp(int a, int b) {
 }
 
 QPair<int, int> Bracketscorrect(const QString& str) {
-    QStack<int> stackFigure;
-    QStack<int> stackSquare;
-    QStack<int> stackRound;
+    stack<int> stackFigure;
+    stack<int> stackSquare;
+    stack<int> stackRound;
     char figL = '{', figR = '}';
     char sqrL = '[', sqrR = ']';
     char rndL = '(', rndR = ')';

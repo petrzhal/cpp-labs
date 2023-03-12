@@ -1,21 +1,20 @@
 #include <iostream>
+#include "abiturient.h"
 
-template<class T>
 struct element {
-    T data;
+    abiturient data;
     element* next;
     element* prev;
 };
 
-template<class T>
 class list {
 private:
-    element<T>* _begin;
-    element<T>* _end;
+    element* _begin;
+    element* _end;
     int count;
 
-    element<T>* Move(int ind) {
-        element<T>* it = _begin;
+    element* Move(int ind) {
+        element* it = _begin;
         for (int i = 0; i < ind; ++i) {
             it = it->next;
         }
@@ -34,13 +33,13 @@ public:
     }
 
     list(const list& lst) {
-        _begin = lst.begin;
-        _end = lst.end;
+        _begin = lst._begin;
+        _end = lst._end;
         count = lst.count;
     }
 
-    void addEnd(const T& data) {
-        auto elem = new element<T>();
+    void addEnd(const abiturient& data) {
+        auto elem = new element();
         elem->data = data;
         if (!count) {
             elem->prev = nullptr;
@@ -56,8 +55,8 @@ public:
         count++;
     }
 
-    void addBegin(const T& data) {
-        auto elem = new element<T>();
+    void addBegin(const abiturient& data) {
+        auto elem = new element();
         elem->data = data;
         if (!count) {
             elem->prev = nullptr;
@@ -73,7 +72,7 @@ public:
         count++;
     }
 
-    void insert(const T& data, int ind) {
+    void insert(const abiturient& data, int ind) {
         if (!IsCorrectIndex(ind))
             return;
 
@@ -86,10 +85,10 @@ public:
             return;
         }
         else {
-            auto elem = new element<T>();
+            auto elem = new element();
             elem->data = data;
-            element<T> *elemPrev = Move(ind - 1);
-            element<T> *elemNext = Move(ind);
+            element *elemPrev = Move(ind - 1);
+            element *elemNext = Move(ind);
             elem->prev = elemPrev;
             elem->next = elemNext;
             elemPrev->next = elem;
@@ -102,25 +101,25 @@ public:
         if (!count || (i < 0 && i >= count))
             return;
         if (!i) {
-            element<T> *elem = Move(i);
-            element<T> *next = elem->next;
+            element *elem = Move(i);
+            element *next = elem->next;
             _begin = next;
             next->prev = nullptr;
             delete elem;
             count--;
         }
         else if (i == count - 1) {
-            element<T> *elem = Move(i);
-            element<T> *prev = elem->prev;
+            element *elem = Move(i);
+            element *prev = elem->prev;
             _end = prev;
             prev->next = nullptr;
             delete elem;
             count--;
         }
         else {
-            element<T> *elem = Move(i);
-            element<T> *next = elem->next;
-            element<T> *prev = elem->prev;
+            element *elem = Move(i);
+            element *next = elem->next;
+            element *prev = elem->prev;
             next->prev = prev;
             prev->next = next;
             delete elem;
@@ -129,7 +128,7 @@ public:
     }
 
     void clear() {
-        element<T>* cur = _begin;
+        element* cur = _begin;
         for (int i = 0; i < count - 1; ++i) {
             cur = cur->next;
             delete cur->prev;
@@ -139,15 +138,15 @@ public:
         _end = nullptr;
     }
 
-    T& getElement(int ind) {
-        element<T>* elem = _begin;
+    abiturient& getElement(int ind) {
+        element* elem = _begin;
         for (int i = 0; i < ind; ++i) {
             elem = elem->next;
         }
         return elem->data;
     }
 
-    void print(const std::string& message) {
+    /*void print(const std::string& message) {
         std::cout << message;
         for (int i = 0; i < count; ++i) {
             std::cout << getElement(i) << " ";
@@ -158,28 +157,28 @@ public:
         for (int i = 0; i < count; ++i) {
             std::cout << getElement(i) << " ";
         }
-    }
+    }*/
 
      [[nodiscard]] int size() const {
         return count;
     }
 
-    element<T>* begin() {
+    element* begin() {
         return this->_begin;
     }
 
-    element<T>* end() {
+    element* end() {
         return this->_end;
     }
 
-    list<T>& operator=(const list<T> &other) {
+    list& operator=(const list &other) {
         _begin = other._begin;
         _end = other._end;
         count = other.count;
         return *this;
     }
 
-    T& operator[](int ind) {
+    abiturient& operator[](int ind) {
         return getElement(ind);
     }
 };

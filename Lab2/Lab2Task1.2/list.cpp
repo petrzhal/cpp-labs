@@ -1,12 +1,12 @@
 #include <iostream>
+#include "member.h"
 
 #define null -1
 
-template<class T>
 class list {
 private:
     struct elem {
-        T data;
+        Member data;
         int next;
         int prev;
     };
@@ -39,26 +39,26 @@ public:
     list(const list &lst) {
         elem *newArr = new elem[lst._size];
         for (int i = 0; i < lst._size; ++i) {
-            newArr[i] = lst._arrp[i];
+            newArr[i] = lst._arr[i];
         }
-        _begin = lst.begin;
-        _end = lst.end;
+        _begin = lst._begin;
+        _end = lst._end;
         _size = lst._size;
     }
 
-    void push_back(const T &data) {
+    void push_back(const Member &data) {
         elem *newArr = new elem[_size + 1];
         for (int i = 0; i < _size; ++i) {
             newArr[i] = _arr[i];
         }
         newArr[_size].data = data;
         if (!_size) {
-            newArr[_size].prev = -1;
-            newArr[_size].next = -1;
+            newArr[_size].prev = null;
+            newArr[_size].next = null;
             _begin = _end = _size;
         } else {
             newArr[_size].prev = _end;
-            newArr[_size].next = -1;
+            newArr[_size].next = null;
             newArr[_end].next = _size;
             _end = _size;
         }
@@ -66,7 +66,7 @@ public:
         _size++;
     }
 
-    void push_front(const T &data) {
+    void push_front(const Member &data) {
         elem *newArr = new elem[_size + 1];
         for (int i = 0; i < _size; ++i) {
             newArr[i] = _arr[i];
@@ -86,7 +86,7 @@ public:
         _size++;
     }
 
-    void insert(const T &data, int index) {
+    /*void insert(const Member &data, int index) {
         if (!IsCorrectIndex(index))
             throw std::out_of_range("index out of range");
 
@@ -97,7 +97,7 @@ public:
             push_front(data);
             return;
         } else {
-            elem *newArr = new T[_size + 1];
+            elem *newArr = new elem[_size + 1];
             for (int i = 0; i < _size + 1; ++i) {
                 newArr[i] = _arr[i];
             }
@@ -111,7 +111,7 @@ public:
             _arr = newArr;
             _size++;
         }
-    }
+    }*/
 
     void erase(int index) {
         if (!_size || (index < 0 && index >= _size))
@@ -138,13 +138,13 @@ public:
         _end = null;
     }
 
-    T &at(int index) {
+    Member &at(int index) {
         if (!IsCorrectIndex(index))
             throw std::out_of_range("index out of range");
         return _arr[Move(index)].data;
     }
 
-    void print(const std::string &message) {
+    /*void print(const std::string &message) {
         std::cout << message;
         for (int i = 0; i < _size; ++i) {
             std::cout << at(i) << " ";
@@ -156,7 +156,7 @@ public:
             std::cout << at(i) << " ";
         }
         std::cout << "\n";
-    }
+    }*/
 
     [[nodiscard]] int size() const {
         return _size;
@@ -170,7 +170,7 @@ public:
         return &_arr[_end];
     }
 
-    list<T> &operator=(const list<T> &other) {
+    list &operator=(const list &other) {
         _arr = other._arr;
         _begin = other._begin;
         _end = other._end;
@@ -178,7 +178,7 @@ public:
         return *this;
     }
 
-    T &operator[](int ind) {
+    Member &operator[](int ind) {
         return at(ind);
     }
 };
