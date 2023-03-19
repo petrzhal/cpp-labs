@@ -39,16 +39,10 @@ namespace it {
     };
 
     template<class T>
-    class iterator {
-    private:
+    class iterator : public const_iterator<T> {
+    protected:
         T *it;
     public:
-        using iterator_category = std::forward_iterator_tag;
-        using difference_type   = std::ptrdiff_t;
-        using value_type        = T;
-        using pointer           = T*;
-        using reference         = T&;
-
         iterator() {
             it = nullptr;
         }
@@ -81,16 +75,8 @@ namespace it {
             return *this;
         }
 
-        pointer operator->() {
+        T *operator->() {
             return it;
-        }
-
-        bool operator<(iterator other) {
-            return this->it < other.it;
-        }
-
-        bool operator>(iterator other) {
-            return this->it > other.it;
         }
 
         virtual bool operator!=(iterator other) {
@@ -125,17 +111,17 @@ namespace it {
             return it - n.it;
         }
 
-        reference operator*() {
+        T &operator*() {
             return *it;
         }
 
-        pointer get_pointer() const {
+        T* get_pointer() const {
             return it;
         }
     };
 
     template<class T>
-    class reverse_iterator {
+    class reverse_iterator : public iterator<T> {
     protected:
         T *it;
     public:

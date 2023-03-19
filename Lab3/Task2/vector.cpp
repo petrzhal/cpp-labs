@@ -2,7 +2,7 @@
 #include "iterator.cpp"
 
 template<typename T>
-class vector : public it::iterator<T>, public it::const_iterator<T>,  public it::reverse_iterator<T>
+class vector : public it::reverse_iterator<T>
 {
     T* _arr;
     size_t _size;
@@ -10,7 +10,6 @@ class vector : public it::iterator<T>, public it::const_iterator<T>,  public it:
 public:
     vector();
     ~vector();
-    vector(it::iterator<T>, it::iterator<T>);
     vector(const vector&);
     vector(std::initializer_list<T>);
     vector& operator=(const vector&);
@@ -164,18 +163,6 @@ vector<T>::~vector() {
         (_arr + i)->~T();
     }
     delete[] reinterpret_cast<int8_t*>(_arr);
-}
-
-template<typename T>
-vector<T>::vector(it::iterator<T> _beg, it::iterator<T> _end)
-{
-    _size = 0;
-    _capacity = 0;
-    auto it = _beg;
-    while (it != _end) {
-        vector::push_back(*it);
-        it++;
-    }
 }
 
 template<typename T>
