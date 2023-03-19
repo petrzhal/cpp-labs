@@ -2,7 +2,7 @@
 #include "iterator.cpp"
 
 template<typename T>
-class vector : public it::reverse_iterator<T>, public it::const_iterator<T>
+class vector : public it::reverse_iterator<T>
 {
     T* _arr;
     size_t _size;
@@ -36,10 +36,10 @@ public:
     T* data();
     T& front();
     bool empty();
-    it::iterator<T> begin();
-    it::iterator<T> end();
-    it::reverse_iterator<T> rbegin();
-    it::reverse_iterator<T> rend();
+    it::iterator<T> begin() const;
+    it::iterator<T> end() const;
+    it::reverse_iterator<T> rbegin() const;
+    it::reverse_iterator<T> rend() const;
     it::const_iterator<T> cbegin() const;
     it::const_iterator<T> cend() const;
     T& operator[](int);
@@ -48,12 +48,12 @@ public:
 };
 
 template<typename T>
-it::reverse_iterator<T> vector<T>::rbegin() {
+it::reverse_iterator<T> vector<T>::rbegin() const {
     return it::reverse_iterator<T>(_arr + _size - 1);
 }
 
 template<typename T>
-it::reverse_iterator<T> vector<T>::rend() {
+it::reverse_iterator<T> vector<T>::rend() const {
     return it::reverse_iterator<T>(_arr - 1);
 }
 
@@ -332,10 +332,8 @@ void vector<T>::emplace(it::iterator<T> pos, Args&&... args) {
 template<typename T>
 void vector<T>::clear() {
     for (int i = 0; i < _size; ++i) {
-        (_arr +i)->~T();
+        (_arr + i)->~T();
     }
-    delete[] reinterpret_cast<int8_t*>(_arr);
-    _arr = reinterpret_cast<T*>(new int8_t());
     _size = 0;
     _capacity = 1;
 }
@@ -356,12 +354,12 @@ T* vector<T>::data() {
 }
 
 template<typename T>
-it::iterator<T> vector<T>::begin() {
+it::iterator<T> vector<T>::begin() const {
     return it::iterator(_arr);
 }
 
 template<typename T>
-it::iterator<T> vector<T>::end() {
+it::iterator<T> vector<T>::end() const {
     return it::iterator(_arr + _size);
 }
 
@@ -388,6 +386,6 @@ const T& vector<T>::operator[](int index) const {
 template<typename T>
 T& vector<T>::at(int index) const {
     if (index >= _size)
-        throw std::out_of_range("index out of range: index = " + std::to_string(index) + ", _size = " + std::to_string(_size));
+        throw std::out_of_range("index out of range");
     return _arr[index];
 }
