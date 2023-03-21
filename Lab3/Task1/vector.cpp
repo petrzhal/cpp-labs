@@ -348,7 +348,6 @@ void vector<T>::clear() {
         (_arr + i)->~T();
     }
     _size = 0;
-    _capacity = 1;
 }
 
 template<typename T>
