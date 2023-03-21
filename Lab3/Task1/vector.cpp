@@ -324,7 +324,7 @@ void vector<T>::erase(it::iterator<T> begin, it::iterator<T> end) {
 
 template<typename T>
 [[nodiscard]] size_t vector<T>::max_size() const {
-    return ULLONG_MAX;
+    return LONG_LONG_MAX;s
 }
 
 template<typename T>

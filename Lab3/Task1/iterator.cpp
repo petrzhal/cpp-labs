@@ -194,12 +194,12 @@ namespace it {
         }
 
         reverse_iterator operator+(int n) {
-            it += n;
+            it -= n;
             return *this;
         }
 
         reverse_iterator operator-(int n) {
-            it -= n;
+            it += n;
             return *this;
         }
 
