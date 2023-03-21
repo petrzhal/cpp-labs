@@ -53,7 +53,7 @@ namespace it {
             it = nullptr;
         }
 
-        iterator(const iterator<T>& other) {
+        iterator(const iterator& other) {
             this->it = other.it;
         }
 
@@ -61,22 +61,22 @@ namespace it {
             it = iter;
         }
 
-        iterator<T>& operator++() {
+        iterator& operator++() {
             it++;
             return *this;
         }
 
-        iterator<T>& operator--() {
+        iterator& operator--() {
             it--;
             return *this;
         }
 
-        iterator<T>& operator++(int) {
+        iterator& operator++(int) {
             it++;
             return *this;
         }
 
-        iterator<T>& operator--(int) {
+        iterator& operator--(int) {
             it--;
             return *this;
         }
@@ -111,14 +111,12 @@ namespace it {
             return *this;
         }
 
-        iterator operator+(int n) {
-            it += n;
-            return *this;
+        iterator operator+(size_t n) {
+            return iterator(it + n);
         }
 
-        iterator operator-(int n) {
-            it -= n;
-            return *this;
+        iterator operator-(size_t n) {
+            return iterator(it - n);
         }
 
         size_t operator-(iterator n) {
@@ -193,14 +191,12 @@ namespace it {
             return *this;
         }
 
-        reverse_iterator operator+(int n) {
-            it -= n;
-            return *this;
+        reverse_iterator operator-(size_t n) {
+            return reverse_iterator(it + n);
         }
 
-        reverse_iterator operator-(int n) {
-            it += n;
-            return *this;
+        reverse_iterator operator+(size_t n) {
+            return reverse_iterator(it - n);
         }
 
         size_t operator-(reverse_iterator n) {
