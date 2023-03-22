@@ -71,14 +71,16 @@ namespace it {
             return *this;
         }
 
-        iterator& operator++(int) {
+        iterator operator++(int) {
+            iterator old = *this;
             it++;
-            return *this;
+            return old;
         }
 
-        iterator& operator--(int) {
+        iterator operator--(int) {
+            iterator old = *this;
             it--;
-            return *this;
+            return old;
         }
 
         pointer operator->() {
@@ -149,24 +151,26 @@ namespace it {
             it = iter;
         }
 
-        reverse_iterator<T>& operator++() {
+        reverse_iterator& operator++() {
             it--;
             return *this;
         }
 
-        reverse_iterator<T>& operator--() {
+        reverse_iterator& operator--() {
             it++;
             return *this;
         }
 
-        reverse_iterator<T>& operator++(int) {
+        reverse_iterator operator++(int) {
+            reverse_iterator old = *this;
             it--;
-            return *this;
+            return old;
         }
 
-        reverse_iterator<T>& operator--(int) {
+        reverse_iterator operator--(int) {
+            reverse_iterator old = *this;
             it++;
-            return *this;
+            return old;
         }
 
         T *operator->() {

@@ -22,18 +22,20 @@ public:
     void resize(int, const T & = T());
     void erase(it::iterator<T>);
     void erase(it::iterator<T>, it::iterator<T>);
-    void insert(it::iterator<T>, const T &value);
+    void insert(it::iterator<T>, const T&);
     template<typename InputIterator>
     void insert(const it::iterator<T> &, InputIterator, InputIterator);
     [[nodiscard]] size_t max_size() const;
     void assign(size_t, const T &);
+    template<typename InputIterator>
+    void assign(InputIterator, InputIterator);
     template<class... Args>
     void emplace(it::iterator<T>, Args &&...);
     template<class... Args>
     void emplace_back(Args &&...);
     void clear();
     [[nodiscard]] size_t capacity();
-    void swap(const vector<T> &);
+    void swap(const vector<T>&);
     T &back();
     T *data();
     T &front();
@@ -48,6 +50,16 @@ public:
     const T &operator[](int) const;
     T &at(int) const;
 };
+
+template<typename T>
+template<typename InputIterator>
+void vector<T>::assign(InputIterator _begin, InputIterator _end) {
+    vector::clear();
+    auto it = _begin;
+    while (it != _end) {
+        vector::push_back(*it++);
+    }
+}
 
 template<typename T>
 it::reverse_iterator<T> vector<T>::rbegin() const {
