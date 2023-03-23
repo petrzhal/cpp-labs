@@ -132,7 +132,7 @@
     <property name="geometry">
      <rect>
       <x>340</x>
-      <y>150</y>
+      <y>140</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -145,7 +145,7 @@
     <property name="geometry">
      <rect>
       <x>340</x>
-      <y>110</y>
+      <y>100</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -158,7 +158,7 @@
     <property name="geometry">
      <rect>
       <x>340</x>
-      <y>190</y>
+      <y>180</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -171,7 +171,7 @@
     <property name="geometry">
      <rect>
       <x>340</x>
-      <y>250</y>
+      <y>260</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -294,14 +294,30 @@
     <property name="geometry">
      <rect>
       <x>340</x>
-      <y>290</y>
+      <y>300</y>
       <width>131</width>
       <height>51</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <property name="text">
      <string>Удалить элемент
 с конца</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_clear">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>220</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Очистить все</string>
     </property>
    </widget>
    <zorder>groupBox_2</zorder>
@@ -314,6 +330,7 @@
    <zorder>groupBox_3</zorder>
    <zorder>groupBox_4</zorder>
    <zorder>pushButton_popback</zorder>
+   <zorder>pushButton_clear</zorder>
   </widget>
  </widget>
  <resources/>

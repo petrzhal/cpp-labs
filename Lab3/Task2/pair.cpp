@@ -3,14 +3,15 @@ template<typename first_T, typename second_T>
 struct pair {
     first_T first;
     second_T second;
+
     pair() {
         first = first_T();
         second = second_T();
     }
 
     pair(const first_T& first, const second_T& second) {
-        this->first = first;
-        this->second = second;
+        new (&this->first) first_T(first);
+        new (&this->second) second_T(second);
     }
 
     void swap(pair<first_T, second_T>& other) {

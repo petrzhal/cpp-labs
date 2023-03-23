@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include "vector.cpp"
+#include "C:/QtLabs/Lab3/Lib/Vector/vector.h"
 #include "resize.h"
 #include <QMessageBox>
 
@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Работа с вектором целых чисел типа int");
 }
 
 MainWindow::~MainWindow()
@@ -164,6 +165,14 @@ void MainWindow::on_pushButton_deleteFew_clicked()
 void MainWindow::on_pushButton_popback_clicked()
 {
     vec.pop_back();
+    ui->textBrowser->clear();
+    ui->textBrowser->append(toString(vec));
+}
+
+
+void MainWindow::on_pushButton_clear_clicked()
+{
+    vec.clear();
     ui->textBrowser->clear();
     ui->textBrowser->append(toString(vec));
 }

@@ -19,9 +19,7 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
-        vector.cpp
         pair.cpp
-        iterator.cpp
         newelement.h
         newelement.cpp
         newelement.ui
@@ -50,7 +48,11 @@ else()
     endif()
 endif()
 
-target_link_libraries(Lab3Task2 PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+set (LIB_DIR
+    C:/QtLabs/Lab3/Lib/build-Vector-Desktop_Qt_6_4_1_MinGW_64_bit-Debug/debug
+)
+
+target_link_libraries(Lab3Task2 PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${LIB_DIR}/libvector.a)
 
 set_target_properties(Lab3Task2 PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

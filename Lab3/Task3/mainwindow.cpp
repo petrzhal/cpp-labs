@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include "vector.cpp"
+#include "C:/QtLabs/Lab3/Lib/Vector/vector.h"
 #include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -38,6 +38,7 @@ void MainWindow::on_pushButton_add_clicked()
     }
     ui->textBrowser->append(toString(sequence));
 }
+
 
 void MainWindow::on_pushButton_clicked()
 {

@@ -34,6 +34,8 @@ private slots:
 
     void on_pushButton_popback_clicked();
 
+    void on_pushButton_clear_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

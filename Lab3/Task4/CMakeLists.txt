@@ -19,8 +19,6 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
-        vector.cpp
-        iterator.cpp
         resize.h
         resize.cpp
         resize.ui
@@ -49,7 +47,11 @@ else()
     endif()
 endif()
 
-target_link_libraries(Lab3Task4 PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+set (LIB_DIR
+    C:/QtLabs/Lab3/Lib/build-Vector-Desktop_Qt_6_4_1_MinGW_64_bit-Debug/debug
+)
+
+target_link_libraries(Lab3Task4 PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${LIB_DIR}/libVector.a)
 
 set_target_properties(Lab3Task4 PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
