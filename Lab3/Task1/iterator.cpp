@@ -1,218 +1,248 @@
 #include <iostream>
+
 namespace it {
     template<class T>
-    class const_iterator {
-    private:
-        const T* it;
-    public:
-        const_iterator() {
-            it = nullptr;
-        }
-
-        const_iterator(const const_iterator<T>& other) {
-            this->it = other.it;
-        }
-
-        explicit const_iterator(T *iter) {
-            it = iter;
-        }
-
-        const T *operator->() {
-            return it;
-        }
-
-        bool operator!=(const const_iterator &other) {
-            return it != other.it;
-        }
-
-        const_iterator& operator=(const const_iterator &other) {
-            it = other.it;
-            return *this;
-        }
-
-        const T &operator*() {
-            return *it;
-        }
-        const T* get_pointer() {
-            return it;
-        }
-    };
-
-    template<class T>
     class iterator {
-    private:
-        T *it;
     public:
-        using iterator_category = std::forward_iterator_tag;
+        using iterator_category = std::random_access_iterator_tag;
         using difference_type   = std::ptrdiff_t;
         using value_type        = T;
-        using pointer           = T*;
-        using reference         = T&;
-
+        using pointer           = value_type*;
+        using reference         = value_type&;
+    private:
+        pointer current;
+    public:
         iterator() {
-            it = nullptr;
+            current = nullptr;
         }
 
         iterator(const iterator& other) {
-            this->it = other.it;
+            this->current = other.current;
         }
 
-        explicit iterator(T *iter) {
-            it = iter;
+        explicit iterator(pointer iter) {
+            current = iter;
         }
 
         iterator& operator++() {
-            it++;
+            current++;
             return *this;
         }
 
         iterator& operator--() {
-            it--;
+            current--;
             return *this;
         }
 
         iterator operator++(int) {
             iterator old = *this;
-            it++;
+            current++;
             return old;
         }
 
         iterator operator--(int) {
             iterator old = *this;
-            it--;
+            current--;
             return old;
         }
 
-        pointer operator->() {
-            return it;
-        }
-
         bool operator<(iterator other) {
-            return this->it < other.it;
+            return this->current < other.current;
         }
 
         bool operator>(iterator other) {
-            return this->it > other.it;
+            return this->current > other.current;
         }
 
         virtual bool operator!=(iterator other) {
-            return this->it != other.it;
+            return this->current != other.current;
         }
 
         bool operator==(iterator other) {
-            return this->it == other.it;
+            return this->current == other.current;
         }
 
         iterator& operator=(const iterator &other) {
-            it = other.it;
+            current = other.current;
             return *this;
         }
 
         iterator& operator=(const iterator *other) {
-            it = other->it;
+            current = other->current;
+            return *this;
+        }
+
+        iterator& operator+=(size_t n) {
+            current += n;
+            return *this;
+        }
+
+        iterator& operator-=(size_t n) {
+            current -= n;
             return *this;
         }
 
         iterator operator+(size_t n) {
-            return iterator(it + n);
+            return iterator(current + n);
         }
 
         iterator operator-(size_t n) {
-            return iterator(it - n);
+            return iterator(current - n);
         }
 
         size_t operator-(iterator n) {
-            return it - n.it;
+            return current - n.current;
         }
 
         reference operator*() {
-            return *it;
+            return *current;
+        }
+
+        pointer operator->() {
+            return current;
         }
 
         pointer get_pointer() const {
-            return it;
+            return current;
         }
     };
 
     template<class T>
     class reverse_iterator {
-    protected:
-        T *it;
+    public:
+        using iterator_category = std::random_access_iterator_tag;
+        using difference_type   = std::ptrdiff_t;
+        using value_type        = T;
+        using pointer           = T*;
+        using reference         = T&;
+    private:
+        pointer current;
     public:
         reverse_iterator() {
-            it = nullptr;
+            current = nullptr;
         }
 
         explicit reverse_iterator(const iterator<T>& other) {
-            this->it = other.it;
+            this->current = other.current;
         }
 
-        explicit reverse_iterator(T *iter) {
-            it = iter;
+        explicit reverse_iterator(pointer iter) {
+            current = iter;
         }
 
         reverse_iterator& operator++() {
-            it--;
+            current--;
             return *this;
         }
 
         reverse_iterator& operator--() {
-            it++;
+            current++;
             return *this;
         }
 
         reverse_iterator operator++(int) {
             reverse_iterator old = *this;
-            it--;
+            current--;
             return old;
         }
 
         reverse_iterator operator--(int) {
             reverse_iterator old = *this;
-            it++;
+            current++;
             return old;
         }
 
-        T *operator->() {
-            return it;
+        pointer operator->() {
+            return current;
         }
 
         virtual bool operator!=(reverse_iterator other) {
-            return this->it != other.it;
+            return this->current != other.current;
         }
 
         bool operator==(reverse_iterator other) {
-            return this->it == other.it;
+            return this->current == other.current;
         }
 
         reverse_iterator& operator=(const reverse_iterator &other) {
-            it = other.it;
+            current = other.current;
             return *this;
         }
 
         reverse_iterator& operator=(const reverse_iterator *other) {
-            it = other->it;
+            current = other->current;
             return *this;
         }
 
         reverse_iterator operator-(size_t n) {
-            return reverse_iterator(it + n);
+            return reverse_iterator(current + n);
         }
 
         reverse_iterator operator+(size_t n) {
-            return reverse_iterator(it - n);
+            return reverse_iterator(current - n);
+        }
+
+        reverse_iterator& operator+=(size_t n) {
+            current -= n;
+            return *this;
+        }
+
+        reverse_iterator& operator-=(size_t n) {
+            current += n;
+            return *this;
         }
 
         size_t operator-(reverse_iterator n) {
-            return it - n.it;
+            return current - n.current;
         }
 
-        T &operator*() {
-            return *it;
+        reference operator*() {
+            return *current;
         }
 
-        T* get_pointer() const {
-            return it;
+        pointer get_pointer() const {
+            return current;
+        }
+    };
+
+    template<class T>
+    class const_iterator {
+    public:
+        using iterator_category = std::random_access_iterator_tag;
+        using difference_type   = std::ptrdiff_t;
+        using value_type        = T;
+        using pointer           = value_type*;
+        using reference         = value_type&;
+    private:
+        const pointer* current;
+    public:
+        const_iterator() {
+            current = nullptr;
+        }
+
+        const_iterator(const const_iterator& other) {
+            this->current = other.current;
+        }
+
+        explicit const_iterator(pointer iter) {
+            current = iter;
+        }
+
+        bool operator!=(const const_iterator &other) {
+            return current != other.current;
+        }
+
+        const_iterator& operator=(const const_iterator &other) {
+            current = other.current;
+            return *this;
+        }
+
+        const T &operator*() {
+            return *current;
+        }
+
+        const T* get_pointer() {
+            return current;
         }
     };
 };
