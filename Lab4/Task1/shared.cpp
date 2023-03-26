@@ -32,7 +32,8 @@ public:
     shared_ptr(shared_ptr &&other) noexcept {
         ptr = other.ptr;
         counter = other.counter;
-        other.ptr = other.counter = nullptr;
+        other.ptr = nullptr;
+        other.counter = nullptr;
     }
     shared_ptr &operator=(shared_ptr &&other) noexcept {
         shared_ptr::_clean();
@@ -57,7 +58,8 @@ public:
     }
 };
 
-template <typename T>
-shared_ptr<T> make_shared(T* ptr) {
+template <typename T, typename... Args>
+shared_ptr<T> make_shared(Args&&... args) {
+    auto ptr = new T(std::forward<Args>(args)...);
     return shared_ptr<T>(ptr);
 }
