@@ -23,7 +23,7 @@ public:
             tmp = buf;
         }
     }
-    void push(const T newElement) {
+    void push(const T& newElement) {
         Node* newEl = new Node();
         newEl->_data = newElement;
         if (_size > 0) {
