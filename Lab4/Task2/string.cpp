@@ -21,7 +21,7 @@ public:
     basic_string(basic_string &&) noexcept;
     basic_string &operator=(const basic_string &);
     basic_string &operator=(basic_string &&) noexcept;
-    [[nodiscard]] size_t size();
+    [[nodiscard]] size_t size() const;
     void reserve(size_t);
     void resize(size_t);
     void resize(size_t, CharT);
@@ -31,6 +31,10 @@ public:
     CharT &operator[](size_t);
     iterator<CharT> begin();
     iterator<CharT> end();
+    reverse_iterator<CharT> rbegin();
+    reverse_iterator<CharT> rend();
+    const_iterator<CharT> cbegin();
+    const_iterator<CharT> cend();
     basic_string operator+(const basic_string &);
     [[nodiscard]] size_t capacity();
     [[nodiscard]] size_t length();
@@ -38,6 +42,7 @@ public:
     void clear();
     void erase(size_t = 0, size_t = npos);
     void insert(size_t, basic_string);
+    int compare(const basic_string&);
     CharT &front() const;
     CharT &back() const;
     CharT* data() const;
@@ -60,6 +65,40 @@ public:
         return is;
     }
 };
+
+template<typename CharT, class Allocator>
+int basic_string<CharT, Allocator>::compare(const basic_string &s) {
+    size_t lhs_sz = size();
+    size_t rhs_sz = s.size();
+    int result = std::char_traits<CharT>::compare(data(), s.data(), std::min(lhs_sz, rhs_sz));
+    if (result != 0)
+        return result;
+    if (lhs_sz < rhs_sz)
+        return -1;
+    if (lhs_sz > rhs_sz)
+        return 1;
+    return 0;
+}
+
+template<typename CharT, class Allocator>
+reverse_iterator<CharT> basic_string<CharT, Allocator>::rend() {
+    return reverse_iterator<CharT>(_base - 1);
+}
+
+template<typename CharT, class Allocator>
+reverse_iterator<CharT> basic_string<CharT, Allocator>::rbegin() {
+    return reverse_iterator<CharT>(_base + _size - 1);
+}
+
+template<typename CharT, class Allocator>
+const_iterator<CharT> basic_string<CharT, Allocator>::cend() {
+    return const_iterator<CharT>(_base + _size);
+}
+
+template<typename CharT, class Allocator>
+const_iterator<CharT> basic_string<CharT, Allocator>::cbegin() {
+    return const_iterator<CharT>(_base);
+}
 
 template<typename CharT, class Allocator>
 void basic_string<CharT, Allocator>::append(size_t count, CharT c) {
@@ -179,7 +218,7 @@ void basic_string<CharT, Allocator>::insert(size_t index, basic_string str) {
     }
     size_t otherInd = 0;
     for (size_t i = index; otherInd < str._size; ++i, ++otherInd) {
-        _base[i] = str._base[otherInd];
+        alloc.construct(_base + i, str._base[otherInd]);
     }
     _size += str._size;
 }
@@ -188,7 +227,7 @@ template<typename CharT, class Allocator>
 void basic_string<CharT, Allocator>::erase(size_t index, size_t count) {
     size_t offset = std::min(count, _size - index);
     for (size_t i = index; i < _size; ++i) {
-        _base[i] = _base[i + offset];
+        alloc.construct(_base + i, _base[i + offset]);
     }
     _size -= offset;
 }
@@ -255,7 +294,7 @@ void basic_string<CharT, Allocator>::push_back(const CharT &ch) {
 }
 
 template<typename CharT, class Allocator>
-size_t basic_string<CharT, Allocator>::size() {
+size_t basic_string<CharT, Allocator>::size() const {
     return _size;
 }
 
