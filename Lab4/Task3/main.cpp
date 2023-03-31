@@ -7,7 +7,7 @@ int main() {
     std::vector<std::string> lines;
 
     std::fstream file;
-    file.open("input.txt", std::ios::in);
+    file.open("input2.txt", std::ios::in);
 
     std::string line;
     while (std::getline(file, line)) {
@@ -16,21 +16,27 @@ int main() {
     file.close();
 
     parser prs(lines);
-
     prs.typesSearch();
-    std::cout << "ÐŸÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ðµ:\n";
+
+    auto types = prs.get_types();
+    std::cout << "Òèïû:\n";
+    for (const auto& type : types) {
+        std::cout << type << "\n";
+    }
+    std::cout << "Ïåðåìåííûå:\n";
     auto res = prs.variablesSearch();
     for (auto &type: res) {
         std::cout << type[0] << "\n";
     }
-    std::cout << "\nÐœÐ°ÑÑÐ¸Ð²Ñ‹:\n";
+    std::cout << "\nÌàññèâû:\n";
     res = prs.arraysSearch();
     for (auto &type: res) {
         std::cout << type[0] << "\n";
     }
-    std::cout << "\nÐŸÑ€Ð¾Ñ‚Ð¾Ñ‚Ð¸Ð¿Ñ‹ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¹:\n";
+    std::cout << "\nÏðîòîòèïû ôóíêöèé:\n";
     res = prs.prototypesSearch();
     for (auto &type: res) {
         std::cout << type[0] << "\n";
     }
+    system("pause");
 }

@@ -2,11 +2,12 @@
 #define PARSER_PARSER_H
 
 #include <regex>
+#include <set>
 
 class parser {
 private:
     std::vector<std::string> input;
-    std::vector<std::string> types {
+    std::set<std::string> types {
             "void",
             "bool",
             "char",
@@ -22,8 +23,8 @@ private:
             "float",
             "double"
     };
-
 public:
+    std::set<std::string> get_types();
     explicit parser(const std::vector<std::string>&);
     std::vector<std::smatch> variablesSearch();
     void typesSearch();
