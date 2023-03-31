@@ -18,17 +18,17 @@ int main() {
     parser prs(lines);
 
     prs.typesSearch();
-    std::cout << "Ïåğåìåííûå:\n";
+    std::cout << "ĞŸĞµÑ€ĞµĞ¼ĞµĞ½Ğ½Ñ‹Ğµ:\n";
     auto res = prs.variablesSearch();
     for (auto &type: res) {
         std::cout << type[0] << "\n";
     }
-    std::cout << "\nÌàññèâû:\n";
+    std::cout << "\nĞœĞ°ÑÑĞ¸Ğ²Ñ‹:\n";
     res = prs.arraysSearch();
     for (auto &type: res) {
         std::cout << type[0] << "\n";
     }
-    std::cout << "\nÏğîòîòèïû ôóíêöèé:\n";
+    std::cout << "\nĞŸÑ€Ğ¾Ñ‚Ğ¾Ñ‚Ğ¸Ğ¿Ñ‹ Ñ„ÑƒĞ½ĞºÑ†Ğ¸Ğ¹:\n";
     res = prs.prototypesSearch();
     for (auto &type: res) {
         std::cout << type[0] << "\n";
