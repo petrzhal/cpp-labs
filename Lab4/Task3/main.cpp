@@ -19,21 +19,21 @@ int main() {
     prs.typesSearch();
 
     auto types = prs.get_types();
-    std::cout << "Типы:\n";
+    std::cout << "Types:\n";
     for (const auto& type : types) {
         std::cout << type << "\n";
     }
-    std::cout << "Переменные:\n";
+    std::cout << "Variables:\n";
     auto res = prs.variablesSearch();
     for (auto &type: res) {
         std::cout << type[0] << "\n";
     }
-    std::cout << "\nМассивы:\n";
+    std::cout << "\nArrays:\n";
     res = prs.arraysSearch();
     for (auto &type: res) {
         std::cout << type[0] << "\n";
     }
-    std::cout << "\nПрототипы функций:\n";
+    std::cout << "\nFunction prototypes:\n";
     res = prs.prototypesSearch();
     for (auto &type: res) {
         std::cout << type[0] << "\n";
