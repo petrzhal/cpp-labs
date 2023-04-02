@@ -1,13 +1,13 @@
+#include "parser.h"
 #include <fstream>
 #include <iostream>
-#include "parser.h"
 
 int main() {
     setlocale(0, "");
     std::vector<std::string> lines;
 
     std::fstream file;
-    file.open("input2.txt", std::ios::in);
+    file.open("input.txt", std::ios::in);
 
     std::string line;
     while (std::getline(file, line)) {
@@ -16,27 +16,31 @@ int main() {
     file.close();
 
     parser prs(lines);
-    prs.typesSearch();
 
     auto types = prs.get_types();
     std::cout << "Types:\n";
-    for (const auto& type : types) {
+    for (const auto &type: types) {
         std::cout << type << "\n";
     }
-    std::cout << "Variables:\n";
-    auto res = prs.variablesSearch();
+    std::cout << "\nVariables:\n";
+    auto res = prs.get_variables();
     for (auto &type: res) {
-        std::cout << type[0] << "\n";
+        auto coordinates = prs.coordinates(type);
+        std::cout << type << " (" << coordinates.first << ", " << coordinates.second << ")\n";
     }
     std::cout << "\nArrays:\n";
-    res = prs.arraysSearch();
+    res = prs.get_arrays();
     for (auto &type: res) {
-        std::cout << type[0] << "\n";
+        std::cout << type << "\n";
     }
     std::cout << "\nFunction prototypes:\n";
-    res = prs.prototypesSearch();
-    for (auto &type: res) {
-        std::cout << type[0] << "\n";
+    auto res2 = prs.get_prototypes();
+    for (auto &type : res2) {
+        std::cout << type.first.first << "\n";
     }
-    system("pause");
+    auto pr = prs.overloadedFuncCount();
+    std::cout << "\nOverloaded functions: " << pr.second << "\n";
+    for (const auto& p : pr.first) {
+        std::cout << "(" << p.first << ", " << p.second << ")\n";
+    }
 }
