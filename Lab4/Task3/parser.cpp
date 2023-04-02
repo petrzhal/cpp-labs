@@ -1,4 +1,5 @@
 #include "parser.h"
+#include <thread>
 #include <algorithm>
 #include <iostream>
 
@@ -143,6 +144,6 @@ std::vector<std::string> parser::get_arrays() const {
     return arrays;
 }
 
-const std::vector<std::pair<std::pair<std::string, std::string>, std::pair<size_t, size_t>>>& parser::get_prototypes() const {
+const std::vector<std::pair<std::pair<std::string, std::string>, std::pair<size_t, size_t>>> &parser::get_prototypes() const {
     return prototypes;
 }

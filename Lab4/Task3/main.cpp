@@ -7,7 +7,7 @@ int main() {
     std::vector<std::string> lines;
 
     std::fstream file;
-    file.open("input.txt", std::ios::in);
+    file.open("input2.txt", std::ios::in);
 
     std::string line;
     while (std::getline(file, line)) {
