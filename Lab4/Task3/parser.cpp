@@ -53,7 +53,6 @@ void parser::prototypesSearch() {
         std::smatch typeRes;
         if (std::regex_search(i, typeRes, r)) {
             prototypes.emplace_back(std::make_pair(typeRes[0], typeRes[3]), coordinates(typeRes[0]));
-            //std::cout << "k = " << typeRes[3] << "\n";
         }
     }
 }
