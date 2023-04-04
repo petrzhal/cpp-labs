@@ -1,22 +1,22 @@
-#include "parser.h"
-#include <thread>
+#include "parser.hpp"
 #include <algorithm>
 #include <iostream>
+#include <thread>
 
 void parser::variablesSearch() {
-    for (const auto &i: input) {
+    for (size_t i = 0; i < input.size(); ++i) {
         std::string typeRegex;
-        typeRegex = R"(((const\s)?()" + typesToLine() + R"()\**(<.*>)*\s+(\**\s*\w+(\s=\s[-+]?(?:\d+|\d*.\d+)(?:[eE][-+]?\d+)?\b)*(,*\s*))*(;)))";
+        typeRegex = (R"(((const\s)?()" + typesToLine() + R"()\**(<.*>)*\s+(\**\s*\w+(\s=\s[-+]?(?:\d+|\d*.\d+)(?:[eE][-+]?\d+)?\b)*(,*\s*))*(;)))");
         std::regex r(typeRegex);
         std::smatch typeRes;
-        if (std::regex_search(i, typeRes, r))
-            variables.emplace_back(typeRes[0]);
+        if (std::regex_search(input[i], typeRes, r))
+            variables.emplace_back(typeRes[0], coordinates(typeRes[0], i));
     }
 }
 
 void parser::typesSearch() {
     for (const auto &i: input) {
-        std::string src(R"((class|struct)\.*\s+(\w+))");
+        std::string src(R"((class|struct|typename)\s+(\w+))");
         std::regex r(src);
         std::smatch res;
         if (std::regex_search(i, res, r)) {
@@ -39,21 +39,30 @@ void parser::arraysSearch() {
 
 parser::parser(const std::vector<std::string> &input) {
     this->input = input;
-    typesSearch();
-    variablesSearch();
-    arraysSearch();
-    prototypesSearch();
+    std::thread t1(&parser::typesSearch, this);
+    std::thread t2(&parser::variablesSearch, this);
+    std::thread t3(&parser::arraysSearch, this);
+    std::thread t4(&parser::prototypesSearch, this);
+    t1.join();
+    t2.join();
+    t3.join();
+    t4.join();
 }
 
 void parser::prototypesSearch() {
-    for (const auto &i: input) {
+    for (size_t i = 0; i < input.size(); ++i) {
         std::string typeRegex;
         std::string typeLine = typesToLine();
-        typeRegex = "(const\\s)?(" + typeLine + R"()&*\.*\s*&*\.*(\w+)(\s*)(\(((const\s)?()" + typeLine + R"()(&*\.*\s*&*\.*\w*)(\s=\s[-+]?(?:\d+|\d*.\d+)(?:[eE][-+]?\d+)?\b)*,*\s*)*\)))";
+        typeRegex = "(const\\s)?(" + typeLine + R"()&*\s*&*(\w+)(\s*)(\(((const\s)?()" + typeLine + R"()(&*\.*\s*&*\.*\w*)(\s=\s[-+]?(?:\d+|\d*.\d+)(?:[eE][-+]?\d+)?\b)*,*\s*)*\)))";
         std::regex r(typeRegex);
         std::smatch typeRes;
-        if (std::regex_search(i, typeRes, r)) {
-            prototypes.emplace_back(std::make_pair(typeRes[0], typeRes[3]), coordinates(typeRes[0]));
+        try {
+            if (std::regex_search(input[i], typeRes, r)) {
+                prototypes.emplace_back(std::make_pair(typeRes[0], typeRes[3]), coordinates(typeRes[0], i));
+            }
+        } catch (...) {
+            std::cout << "kal\n";
+            system("pause");
         }
     }
 }
@@ -72,30 +81,9 @@ std::string parser::typesToLine() {
 std::set<std::string> parser::get_types() {
     return types;
 }
-std::pair<size_t, size_t> parser::coordinates(const std::string &match) {
-    size_t row = -1;
-    size_t col = -1;
-    std::string correctMatch(match);
-    for (size_t i = 0; i < correctMatch.size(); ++i) {
-        if (correctMatch[i] == '*' || correctMatch[i] == '(' || correctMatch[i] == ')') {
-            correctMatch.insert(i, R"(\)");
-            i++;
-        }
-    }
-    std::regex r(correctMatch);
-    std::smatch res;
-    bool exit = false;
-    for (size_t i = 0; i < input.size() && !exit; ++i) {
-        if (std::regex_search(input[i], res, r)) {
-            for (size_t j = 0; j <= input[i].size() - res[0].length() && !exit; ++j) {
-                if (input[i].substr(j, res[0].length()) == res[0]) {
-                    col = j + 1;
-                    row = i + 1;
-                    exit = true;
-                }
-            }
-        }
-    }
+std::pair<size_t, size_t> parser::coordinates(const std::string &match, size_t ind) {
+    size_t row = ind + 1;
+    size_t col = input[ind].find(match) + 1;
     return {row, col};
 }
 
@@ -136,7 +124,7 @@ std::pair<std::vector<std::pair<size_t, size_t>>, size_t> parser::overloadedFunc
     return crd;
 }
 
-std::vector<std::string> parser::get_variables() const {
+std::vector<std::pair<std::string, std::pair<size_t, size_t>>> parser::get_variables() const {
     return variables;
 }
 
