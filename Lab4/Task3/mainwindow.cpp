@@ -96,6 +96,7 @@ void MainWindow::on_pushButton_parse_clicked()
 
 void MainWindow::on_action_triggered()
 {
+    ui->textBrowser->clear();
     QString path = QFileDialog::getOpenFileName(this, "", "C:/QtLabs/Lab4_", "*.c *.cpp *.h *.hpp");
     QFile qFile(path);
     qFile.open(QIODevice::ReadOnly);

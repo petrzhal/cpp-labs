@@ -166,7 +166,7 @@ std::pair<std::vector<std::pair<std::string, std::pair<size_t, size_t>>>, size_t
 
 void parser::countBranсh(size_t i)
 {
-    std::string reg(R"(((while|if|else if|else)\s?\(.+\)\s*\{))");
+    std::string reg(R"(((while|if|else if|else)\s?\(.+\)\s*\{)|(for\s?\(.+\)\s*\{))");
     std::regex r(reg);
     std::smatch res;
     if (std::regex_search(input[i], res, r)) {
