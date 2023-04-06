@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include "parser.hpp"
+#include "parser.h"
 #include <QTextStream>
 #include <QFileDialog>
 #include <QFile>
@@ -57,7 +57,7 @@ void MainWindow::on_pushButton_parse_clicked()
         ui->textBrowser->append(QString::fromStdString(type));
     }
 
-    ui->textBrowser->append("\nFunction prototypes:");
+    ui->textBrowser->append("\nFunction prototypes: " + QString::number(prs.get_prototypes().size()));
     auto res2 = prs.get_prototypes();
     for (auto &type : res2) {
         ui->textBrowser->append(QString::fromStdString(type.first.first));
@@ -83,12 +83,20 @@ void MainWindow::on_pushButton_parse_clicked()
     for (auto &change: ch) {
         ui->textBrowser->append(QString::fromStdString(change.first) + "    (" + QString::number(change.second.first) + ", " + QString::number(change.second.second) + ")");
     }
+
+    ui->textBrowser->append("\nBranches: ");
+    prs.findBranches();
+    auto r = prs.get_branchesCount();
+    for (size_t i = 0; i < lines.size(); ++i) {
+        if (r[i])
+            ui->textBrowser->append(QString::fromStdString(lines[i].substr(0, lines[i].size() - 1)) + "    Depth: " + QString::number(static_cast<int>(std::log(r[i] * 2) / std::log(2))));
+    }
 }
 
 
 void MainWindow::on_action_triggered()
 {
-    QString path = QFileDialog::getOpenFileName(this, "", "C:/QtLabs/Lab3", "*.cpp *.h *.hpp");
+    QString path = QFileDialog::getOpenFileName(this, "", "C:/QtLabs/Lab4_", "*.c *.cpp *.h *.hpp");
     QFile qFile(path);
     qFile.open(QIODevice::ReadOnly);
     QTextStream file(&qFile);

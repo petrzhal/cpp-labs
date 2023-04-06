@@ -1,4 +1,4 @@
-#include "parser.hpp"
+#include "parser.h"
 #include <algorithm>
 #include <iostream>
 #include <thread>
@@ -48,6 +48,7 @@ parser::parser(const std::vector<std::string> &input) {
     std::thread t2(&parser::variablesSearch, this);
     std::thread t3(&parser::arraysSearch, this);
     std::thread t4(&parser::prototypesSearch, this);
+    branchLevel.resize(input.size() + 1);
     t1.join();
     t2.join();
     t3.join();
@@ -82,7 +83,7 @@ std::vector<std::pair<std::string, std::pair<size_t, size_t>>> parser::logicErro
 {
     std::vector<std::pair<std::string, std::pair<size_t, size_t>>> errors;
     for (size_t i = 0; i < input.size(); ++i) {
-        std::string reg(R"((while\s*\((true|false)\))|(for\s+\(\s*((\w+\s+)*\w+(\s=\s.+)*)*;\s*;.*\)))");
+        std::string reg(R"(((while|if|else if)\s*\((true|false)\))|(for\s+\(\s*((\w+\s+)*\w+(\s=\s.+)*)*;\s*;.*\)))");
         std::regex r(reg);
         std::smatch res;
         if (std::regex_search(input[i], res, r)) {
@@ -96,7 +97,7 @@ std::vector<std::pair<std::string, std::pair<size_t, size_t>>> parser::variables
 {
     std::vector<std::pair<std::string, std::pair<size_t, size_t>>> changes;
     for (size_t i = 0; i < input.size(); ++i) {
-        std::string reg(R"(((\+\+|--)\w+)|(\w+(\+\+|--))|(\w+\s(=|\+=|-=)\s*\S+\s*;))");
+        std::string reg(R"(((\+\+|--)\w+)|(\w+(\+\+|--))|(\w+\s(=|\+=|-=)\s*([^\s\)])+\s*;))");
         std::regex r(reg);
         std::smatch res;
         if (std::regex_search(input[i], res, r)) {
@@ -161,6 +162,33 @@ std::pair<std::vector<std::pair<std::string, std::pair<size_t, size_t>>>, size_t
     }
     crd.second = count;
     return crd;
+}
+
+void parser::countBranсh(size_t i)
+{
+    std::string reg(R"(((while|if|else if|else)\s?\(.+\)\s*\{))");
+    std::regex r(reg);
+    std::smatch res;
+    if (std::regex_search(input[i], res, r)) {
+        branchLevel[i]++;
+        size_t j = i + 1;
+        while (coordinates("}", j).second != coordinates(res[0], i).second && j < input.size() - 1) {
+            countBranсh(j);
+            ++j;
+        }
+    }
+}
+
+void parser::findBranches()
+{
+    for (size_t i = 0; i < input.size(); ++i) {
+        countBranсh(i);
+    }
+}
+
+std::vector<int> parser::get_branchesCount()
+{
+    return branchLevel;
 }
 
 std::vector<std::pair<std::string, std::pair<size_t, size_t>>> parser::get_variables() const {

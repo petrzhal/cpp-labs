@@ -20,7 +20,7 @@ set(PROJECT_SOURCES
         mainwindow.h
         mainwindow.ui
         parser.cpp
-        parser.hpp
+        parser.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
