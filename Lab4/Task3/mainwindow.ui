@@ -21,18 +21,14 @@
     <item row="0" column="0" colspan="2">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QTextEdit" name="textEdit">
+       <widget class="QPlainTextEdit" name="textEdit">
         <property name="font">
          <font>
           <pointsize>12</pointsize>
          </font>
         </property>
-        <property name="cursor" stdset="0">
-         <cursorShape>IBeamCursor</cursorShape>
-        </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(46, 47, 48);
-color: rgb(255, 255, 255)</string>
+         <string notr="true">color: white</string>
         </property>
        </widget>
       </item>
@@ -53,10 +49,11 @@ color: rgb(255, 255, 255)</string>
         <item>
          <widget class="QPushButton" name="pushButton_parse">
           <property name="styleSheet">
-           <string notr="true">color: white</string>
+           <string notr="true">background-color: rgb(78, 78, 79);
+color: white</string>
           </property>
           <property name="text">
-           <string>Парсить жопу</string>
+           <string>Parse</string>
           </property>
          </widget>
         </item>
@@ -75,8 +72,23 @@ color: rgb(255, 255, 255)</string>
      <height>25</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="action"/>
+   </widget>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="action">
+   <property name="text">
+    <string>Открыть</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

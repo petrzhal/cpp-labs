@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <thread>
+#include <QDebug>
 
 void parser::variablesSearch() {
     for (size_t i = 0; i < input.size(); ++i) {
@@ -14,13 +15,17 @@ void parser::variablesSearch() {
     }
 }
 
-void parser::typesSearch() {
+void parser::classesSearch() {
     for (const auto &i: input) {
-        std::string src(R"((class|struct|typename)\s+(\w+))");
+        std::string src(R"((class|struct)\s+(\w+)\s*\{)");
         std::regex r(src);
         std::smatch res;
         if (std::regex_search(i, res, r)) {
             types.insert(res[2]);
+            if (res[1] == "class")
+                classes.emplace_back(res[2]);
+            else if (res[1] == "struct")
+                structs.emplace_back(res[2]);
         }
     }
 }
@@ -39,7 +44,7 @@ void parser::arraysSearch() {
 
 parser::parser(const std::vector<std::string> &input) {
     this->input = input;
-    std::thread t1(&parser::typesSearch, this);
+    std::thread t1(&parser::classesSearch, this);
     std::thread t2(&parser::variablesSearch, this);
     std::thread t3(&parser::arraysSearch, this);
     std::thread t4(&parser::prototypesSearch, this);
@@ -53,16 +58,11 @@ void parser::prototypesSearch() {
     for (size_t i = 0; i < input.size(); ++i) {
         std::string typeRegex;
         std::string typeLine = typesToLine();
-        typeRegex = "(const\\s)?(" + typeLine + R"()&*\s*&*(\w+)(\s*)(\(((const\s)?()" + typeLine + R"()(&*\.*\s*&*\.*\w*)(\s=\s[-+]?(?:\d+|\d*.\d+)(?:[eE][-+]?\d+)?\b)*,*\s*)*\)))";
+        typeRegex = "(const\\s)?(" + typeLine + R"()&*\s*&*(\w+\:\:)*(\w+)(\s*)(\(((const\s)?()" + typeLine + R"()(&*\.*\s*&*\.*\w*)(\s=\s[-+]?(?:\d+|\d*.\d+)(?:[eE][-+]?\d+)?\b)*,*\s*)*\)))";
         std::regex r(typeRegex);
         std::smatch typeRes;
-        try {
-            if (std::regex_search(input[i], typeRes, r)) {
-                prototypes.emplace_back(std::make_pair(typeRes[0], typeRes[3]), coordinates(typeRes[0], i));
-            }
-        } catch (...) {
-            std::cout << "kal\n";
-            system("pause");
+        if (std::regex_search(input[i], typeRes, r)) {
+            prototypes.emplace_back(std::make_pair(typeRes[0], typeRes[4]), coordinates(typeRes[0], i));
         }
     }
 }
@@ -78,9 +78,48 @@ std::string parser::typesToLine() {
     return typesLine;
 }
 
+std::vector<std::pair<std::string, std::pair<size_t, size_t>>> parser::logicErrors()
+{
+    std::vector<std::pair<std::string, std::pair<size_t, size_t>>> errors;
+    for (size_t i = 0; i < input.size(); ++i) {
+        std::string reg(R"((while\s*\((true|false)\))|(for\s+\(\s*((\w+\s+)*\w+(\s=\s.+)*)*;\s*;.*\)))");
+        std::regex r(reg);
+        std::smatch res;
+        if (std::regex_search(input[i], res, r)) {
+            errors.emplace_back(res[0], coordinates(res[0], i));
+        }
+    }
+    return errors;
+}
+
+std::vector<std::pair<std::string, std::pair<size_t, size_t>>> parser::variablesChanges()
+{
+    std::vector<std::pair<std::string, std::pair<size_t, size_t>>> changes;
+    for (size_t i = 0; i < input.size(); ++i) {
+        std::string reg(R"(((\+\+|--)\w+)|(\w+(\+\+|--))|(\w+\s(=|\+=|-=)\s*\S+\s*;))");
+        std::regex r(reg);
+        std::smatch res;
+        if (std::regex_search(input[i], res, r)) {
+            changes.emplace_back(res[0], coordinates(res[0], i));
+        }
+    }
+    return changes;
+}
+
 std::set<std::string> parser::get_types() {
     return types;
 }
+
+std::vector<std::string> parser::get_classes()
+{
+    return classes;
+}
+
+std::vector<std::string> parser::get_structs()
+{
+    return structs;
+}
+
 std::pair<size_t, size_t> parser::coordinates(const std::string &match, size_t ind) {
     size_t row = ind + 1;
     size_t col = input[ind].find(match) + 1;
@@ -107,9 +146,9 @@ bool IsChecked(const std::vector<std::pair<std::pair<std::string, std::string>, 
     return false;
 }
 
-std::pair<std::vector<std::pair<size_t, size_t>>, size_t> parser::overloadedFuncCount() {
+std::pair<std::vector<std::pair<std::string, std::pair<size_t, size_t>>>, size_t> parser::overloadedFuncCount() {
     size_t count = 0;
-    std::pair<std::vector<std::pair<size_t, size_t>>, size_t> crd;
+    std::pair<std::vector<std::pair<std::string, std::pair<size_t, size_t>>>, size_t> crd;
     for (size_t i = 0; i < prototypes.size(); ++i) {
         if (!IsChecked(prototypes, i) && !IsUnique(prototypes, i)) {
             count++;
@@ -117,7 +156,7 @@ std::pair<std::vector<std::pair<size_t, size_t>>, size_t> parser::overloadedFunc
     }
     for (size_t i = 0; i < prototypes.size(); ++i) {
         if (!IsUnique(prototypes, i)) {
-            crd.first.emplace_back(prototypes[i].second.first, prototypes[i].second.second);
+            crd.first.emplace_back(prototypes[i].first.first, std::make_pair(prototypes[i].second.first, prototypes[i].second.second));
         }
     }
     crd.second = count;
