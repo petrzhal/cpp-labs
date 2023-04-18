@@ -273,21 +273,6 @@ size_t deque<T, Allocator>::size() const {
 
 template<typename T, class Allocator>
 T &deque<T, Allocator>::operator[](size_t index) const {
-    /*std::cout << "\n___________\n";
-    for (size_t i = 0; i < _capacity; ++i) {
-            for (int j = 0; j < N; ++j)
-            if (base[i])
-                std::cout << base[i][j] << ' ';
-            else
-                std::cout << -1 << ' ';
-        std::cout << '\n';
-    }
-    std::cout << "___________\n";*/
-    /*std::cout << "index = " << index << "\n";
-    std::cout << "ia = " << iaFromID(index) << '\n';
-    std::cout << "ib = " << ibFromIA(iaFromID(index)) << '\n';
-    std::cout << "ic = " << icFromIA(iaFromID(index)) << '\n';
-    std::cout << "value = " << base[ibFromIA(iaFromID(index))][icFromIA(iaFromID(index))] << "\n\n";*/
     return base[ibFromIA(iaFromID(index))][icFromIA(iaFromID(index))];
 }
 
