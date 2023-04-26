@@ -4,7 +4,7 @@
 #include "allocator.cpp"
 #include <iostream>
 
-template<typename T, class Allocator = allocator<T>>
+template<typename T, size_t N = 32, class Allocator = allocator<T>>
 class deque {
 public:
     class deque_iterator {
@@ -16,7 +16,7 @@ public:
         using reference = value_type &;
 
     private:
-        const deque<T>* ptr;
+        const deque<T, N>* ptr;
         size_t index;
 
     public:
@@ -31,12 +31,12 @@ public:
             ptr = other.ptr;
             index = other.index;
             other.ptr = nullptr;
+            other.index = 0;
         }
 
-        explicit deque_iterator(const deque<T, Allocator>* ptr, size_t ind) {
-            this->ptr = ptr;
-            index = ind;
-        }
+        explicit deque_iterator(const deque* ptr, size_t ind)
+            : ptr(ptr),
+              index(ind) {}
 
         deque_iterator &operator++() {
             index++;
@@ -129,18 +129,16 @@ public:
             return *ptr + index;
         }
     };
-
 private:
-    static const size_t N = 32;
     T **base;
     size_t _size;
     size_t _capacity;
     Allocator alloc;
-    std::pair<size_t, size_t> _begin;
-    std::pair<size_t, size_t> _end;
+    size_t _begin;
+    size_t _end;
 
     [[nodiscard]] size_t iaFromID(size_t id) const {
-        return (id + (_begin.second + _begin.first * N)) % (_capacity * N);
+        return (id + _begin) % (_capacity * N);
     }
 
     [[nodiscard]] size_t ibFromIA(size_t ia) const {
@@ -153,6 +151,11 @@ private:
 
 public:
     deque();
+    ~deque();
+    deque(const deque &);
+    deque(deque &&) noexcept;
+    deque &operator=(const deque &);
+    deque &operator=(deque &&) noexcept;
     void push_back(const T &);
     void push_front(const T &);
     void pop_back();
@@ -166,44 +169,120 @@ public:
     bool empty();
 };
 
-template<typename T, class Allocator>
-bool deque<T, Allocator>::empty() {
+template<typename T, size_t N, class Allocator>
+deque<T, N, Allocator> &deque<T, N, Allocator>::operator=(deque &&other) noexcept {
+    clear();
+    for (size_t i = 0; i < _capacity; ++i) {
+        if (base[i]) {
+            alloc.deallocate(base[i]);
+        }
+    }
+    delete[] base;
+    _capacity = other._capacity;
+    _size = 0;
+    _begin = 0;
+    _end = 1;
+    base = new T*[_capacity]{ nullptr };
+    for (size_t i = 0; i < other._size; ++i) {
+        push_back(other[i]);
+    }
+    other._begin = other._end = other._size = other._capacity = 0;
+    other.base = nullptr;
+}
+
+template<typename T, size_t N, class Allocator>
+deque<T, N, Allocator>::deque(deque &&other) noexcept {
+    _capacity = other._capacity;
+    _size = 0;
+    _begin = 0;
+    _end = 1;
+    base = new T*[_capacity]{ nullptr };
+    for (size_t i = 0; i < other._size; ++i) {
+        push_back(other[i]);
+    }
+    other._begin = other._end = other._size = other._capacity = 0;
+    other.base = nullptr;
+}
+
+template<typename T, size_t N, class Allocator>
+deque<T, N, Allocator> &deque<T, N, Allocator>::operator=(const deque &other) {
+    if (this != &other) {
+        clear();
+        for (size_t i = 0; i < _capacity; ++i) {
+            if (base[i]) {
+                alloc.deallocate(base[i]);
+            }
+        }
+        delete[] base;
+        _capacity = other._capacity;
+        _size = 0;
+        _begin = 0;
+        _end = 1;
+        base = new T*[_capacity]{ nullptr };
+        for (size_t i = 0; i < other._size; ++i) {
+            push_back(other[i]);
+        }
+    }
+}
+
+template<typename T, size_t N, class Allocator>
+deque<T, N, Allocator>::deque(const deque &other) {
+    _capacity = other._capacity;
+    _size = 0;
+    _begin = 0;
+    _end = 1;
+    base = new T*[_capacity]{ nullptr };
+    for (size_t i = 0; i < other._size; ++i) {
+        push_back(other[i]);
+    }
+}
+
+template<typename T, size_t N, class Allocator>
+deque<T, N, Allocator>::~deque() {
+    clear();
+    for (size_t i = 0; i < _capacity; ++i) {
+        if (base[i]) {
+            alloc.deallocate(base[i]);
+        }
+    }
+    delete[] base;
+}
+
+template<typename T, size_t N, class Allocator>
+bool deque<T, N, Allocator>::empty() {
     return !_size;
 }
 
-template<typename T, class Allocator>
-void deque<T, Allocator>::clear() {
-    for (size_t i = 0; i < _size; ++i) {
+template<typename T, size_t N, class Allocator>
+void deque<T, N, Allocator>::clear() {
+    size_t oldSize = _size;
+    for (size_t i = 0; i < oldSize; ++i) {
         deque::pop_back();
     }
-    _size = 0;
 }
 
-template<typename T, class Allocator>
-typename deque<T, Allocator>::deque_iterator deque<T, Allocator>::end() const {
+template<typename T, size_t N, class Allocator>
+typename deque<T, N, Allocator>::deque_iterator deque<T, N, Allocator>::end() const {
     return deque_iterator(this, _size);
 }
 
-template<typename T, class Allocator>
-typename deque<T, Allocator>::deque_iterator deque<T, Allocator>::begin() const {
+template<typename T, size_t N, class Allocator>
+typename deque<T, N, Allocator>::deque_iterator deque<T, N, Allocator>::begin() const {
     return deque_iterator(this, 0);
 }
 
-template<typename T, class Allocator>
-void deque<T, Allocator>::push_front(const T &value) {
-    size_t beg = _begin.first;
-    if (!_begin.second) {
-        if (_begin.first) {
-            beg--;
-        }
-        else {
-            beg = _capacity - 1;
-        }
+template<typename T, size_t N, class Allocator>
+void deque<T, N, Allocator>::push_front(const T &value) {
+    if (_begin) {
+        --_begin;
     }
-    if (beg == _end.first) {
-        auto newBase = new T*[ !_capacity ? 0 : _capacity * 2 ]{ nullptr };
+    else {
+        _begin = _capacity * N - 1;
+    }
+    if ((ibFromIA(_begin) == ibFromIA(_end) && _size >= N - 1) || _size >= _capacity * N) {
+        auto newBase = new T*[ _capacity * 2 ]{ nullptr };
         size_t count = 0;
-        for (size_t i = _begin.first; count < _capacity; ++i) {
+        for (size_t i = ibFromIA(_begin); count < _capacity; ++i) {
             i %= _capacity;
             newBase[count] = base[i];
             count++;
@@ -211,78 +290,64 @@ void deque<T, Allocator>::push_front(const T &value) {
         delete[] base;
         base = newBase;
         _capacity *= 2;
-        _begin.first = 0;
-        _end.first = ibFromIA(iaFromID(_size));
-        _end.second = icFromIA(iaFromID(_size));
+        _begin = icFromIA(_begin);
+        _end = iaFromID(_size);
     }
-    if (_begin.second) {
-        _begin.second--;
+    if (!base[ibFromIA(_begin)]) {
+        base[ibFromIA(_begin)] = alloc.allocate(N);
     }
-    else {
-        if (_begin.first) {
-            _begin.first--;
-        }
-        else {
-            _begin.first = _capacity - 1;
-        }
-        _begin.second = N - 1;
-    }
-    if (!base[_begin.first]) {
-        base[_begin.first] = alloc.allocate(N);
-    }
-    alloc.construct(base[_begin.first] + _begin.second, value);
+    alloc.construct(base[ibFromIA(_begin)] + icFromIA(_begin), value);
     _size++;
 }
 
-template<typename T, class Allocator>
-void deque<T, Allocator>::pop_front() {
+template<typename T, size_t N, class Allocator>
+void deque<T, N, Allocator>::pop_front() {
     if (_size) {
-        alloc.destruct(base[_begin.first] + _begin.second);
-        _begin.second++;
-        if (_begin.second >= N) {
-            _begin.second %= N;
-            _begin.first++;
-        }
+        alloc.destruct(base[ibFromIA(_begin)] + icFromIA(_begin));
+        ++_begin;
         _size--;
         if (!_size) {
-            _begin.first = _begin.second = 0;
+            _begin = 0;
         }
     }
 }
 
-template<typename T, class Allocator>
-void deque<T, Allocator>::pop_back() {
+template<typename T, size_t N, class Allocator>
+void deque<T, N, Allocator>::pop_back() {
     if (_size) {
-        alloc.destruct(base[_end.first] + _end.second - 1);
-        _size--;
+        alloc.destruct(base[ibFromIA(_end)] + icFromIA(_end) - 1);
+        --_size;
+        if (_end)
+            --_end;
+        else
+            _end = _capacity * N - 1;
         if (!_size) {
-            _end.first = _end.second = 0;
+            _end = 0;
         }
     }
 }
 
-template<typename T, class Allocator>
-size_t deque<T, Allocator>::capacity() const {
+template<typename T, size_t N, class Allocator>
+size_t deque<T, N, Allocator>::capacity() const {
     return _capacity * N;
 }
 
-template<typename T, class Allocator>
-size_t deque<T, Allocator>::size() const {
+template<typename T, size_t N, class Allocator>
+size_t deque<T, N, Allocator>::size() const {
     return _size;
 }
 
-template<typename T, class Allocator>
-T &deque<T, Allocator>::operator[](size_t index) const {
+template<typename T, size_t N, class Allocator>
+T &deque<T, N, Allocator>::operator[](size_t index) const {
     return base[ibFromIA(iaFromID(index))][icFromIA(iaFromID(index))];
 }
 
-template<typename T, class Allocator>
-void deque<T, Allocator>::push_back(const T &value) {
-    size_t icTail = !_size ? N - 1 : icFromIA(iaFromID(_size - 1));
-    if ((_size == _capacity * N && icTail == N - 1) || _end.first == _begin.first) {
-        auto newBase = new T*[ !_capacity ? 0 : _capacity * 2 ]{ nullptr };
+template<typename T, size_t N, class Allocator>
+void deque<T, N, Allocator>::push_back(const T &value) {
+    if ((_size >= _capacity * N) || ((ibFromIA(_end) == ibFromIA(_begin) && _size >= N - 1))) {
+        auto newBase = new T*[ _capacity * 2 ]{ nullptr };
         size_t count = 0;
-        for (size_t i = _begin.first; count < _capacity; ++i) {
+        for (size_t i = ibFromIA(_begin); count < _capacity; ++i) {
             i %= _capacity;
             newBase[count] = base[i];
             count++;
@@ -290,22 +355,21 @@ void deque<T, Allocator>::push_back(const T &value) {
         delete[] base;
         base = newBase;
         _capacity *= 2;
-        _begin.first = 0;
+        _begin = icFromIA(_begin);
     }
     size_t ib = ibFromIA(iaFromID(_size));
     if (!base[ib]) {
         base[ib] = alloc.allocate(N);
     }
     alloc.construct(base[ib] + icFromIA(iaFromID(_size)), value);
-    _size++;
-    _end.first = ibFromIA(iaFromID(_size));
-    _end.second = icFromIA(iaFromID(_size));
+    ++_size;
+    _end = iaFromID(_size);
 }
 
-template<typename T, class Allocator>
-deque<T, Allocator>::deque() : _size(0), _capacity(N) {
-    _begin = {0, 0};
-    _end = {0, 0};
+template<typename T, size_t N, class Allocator>
+deque<T, N, Allocator>::deque() : _size(0), _capacity(N) {
+    _begin = 0;
+    _end = 1;
     base = new T *[N] { nullptr };
     base[0] = alloc.allocate(N);
 }
