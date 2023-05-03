@@ -44,7 +44,7 @@ public:
         clear(root);
         root = nullptr;
     }
-    Node *get_root() const;
+    //Node *get_root() const;
 };
 
 template<typename Key, typename Value>
@@ -97,7 +97,8 @@ Value &AVLTree<Key, Value>::operator[](const Key &key) {
             return cur->value;
         }
     }
-    return *(new Value());
+    insert(root, key, Value());
+    return operator[](key);
 }
 
 template<typename Key, typename Value>
@@ -110,10 +111,10 @@ void AVLTree<Key, Value>::clear(AVLTree<Key, Value>::Node *node) {
     delete node;
 }
 
-template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::get_root() const {
-    return root;
-}
+//template<typename Key, typename Value>
+//typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::get_root() const {
+//    return root;
+//}
 
 template<typename Key, typename Value>
 typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::balance(Node *&node) {
@@ -197,8 +198,10 @@ typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::remove(AVLTree::Node *&
 
     if (key < node->key) {
         node->left = remove(node->left, key);
+        node = balance(node);
     } else if (key > node->key) {
         node->right = remove(node->right, key);
+        node = balance(node);
     } else {
         if (!node->left && !node->right) {
             delete node;

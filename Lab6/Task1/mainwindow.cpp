@@ -35,7 +35,7 @@ void MainWindow::ShowTree() {
     ui->treeWidget->setColumnCount(1);
     QTreeWidgetItem *rootItem = new QTreeWidgetItem(ui->treeWidget);
     ui->treeWidget->addTopLevelItem(rootItem);
-    tree.addNode(tree.get_root(), rootItem);
+    tree.addNode(tree.root, rootItem);
 }
 
 void MainWindow::on_pushButton_clicked()

@@ -3,6 +3,7 @@
 #include <QString>
 #include <QTreeWidget>
 #include "bst.h"
+#include "mainwindow.h"
 
 class Solve : public AVLTree<int, QString>
 {
@@ -11,6 +12,7 @@ private:
     void postOrder(Node *);
     void inOrder(Node *);
 public:
+    friend class MainWindow;
     Solve() = default;
     static void addNode(AVLTree<int, QString>::Node *node, QTreeWidgetItem *parentItem) {
         if (!node) return;
