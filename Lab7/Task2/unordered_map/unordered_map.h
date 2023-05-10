@@ -5,7 +5,7 @@
 template <typename Key>
 struct hash {
 	size_t operator()(const Key& key) {
-		const uint8_t* ptr = reinterpret_cast<const uint8_t*>(&key);
+		auto ptr = reinterpret_cast<const uint8_t*>(&key);
 		size_t size = sizeof(Key);
 		size_t hash = 0;
 		for (size_t i = 0; i < size; ++i) {
@@ -15,17 +15,24 @@ struct hash {
 	}
 };
 
+template <>
+struct hash<int> {
+	size_t operator()(int key) {
+		return key;
+	}
+};
+
 template <typename Key, typename Value, class Hash = hash<Key>>
 class unordered_map {
 private:
-	std::forward_list<std::pair<Key, Value>>** _base;
+	std::forward_list<std::pair<Key, Value>>* _base;
 	size_t _size;
 	size_t _capacity;
 	size_t hash(const Key&);
 
 public:
 	unordered_map(size_t size = 32)
-		: _base(new std::forward_list<std::pair<Key, Value>>* [size] {}),
+		: _base(new std::forward_list<std::pair<Key, Value>>[size] {}),
 		_size(0),
 		_capacity(size) {}
 	void insert(const Key&, const Value&);
@@ -33,6 +40,7 @@ public:
 	void rehash(size_t);
 	Value& operator[](const Key&);
 	bool contains(const Key&);
+	void clear();
 };
 
 template <typename Key, typename Value, class Hash>
@@ -45,13 +53,10 @@ template <typename Key, typename Value, class Hash>
 void unordered_map<Key, Value, Hash>::insert(const Key& key, const Value& value)
 {
 	size_t i = hash(key);
-	if (!_base[i]) {
-		_base[i] = new std::forward_list<std::pair<Key, Value>>();
-	}
-	if (_size >= _capacity) {
+	if (_size >= _capacity * 0.8) {
 		rehash(_capacity * 2);
 	}
-	(*_base[i]).emplace_front(key, value);
+	_base[i].emplace_front(key, value);
 	++_size;
 }
 
@@ -59,10 +64,10 @@ template<typename Key, typename Value, class Hash>
 void unordered_map<Key, Value, Hash>::erase(const Key& key)
 {
 	size_t i = hash(key);
-	if (!_base[i] || !_size) {
+	if (!_size) {
 		return;
 	}
-	auto& list = *_base[i];
+	auto& list = _base[i];
 	auto prev = list.before_begin();
 	for (auto& el : list) {
 		if (el.first == key) {
@@ -78,13 +83,17 @@ template <typename Key, typename Value, class Hash>
 void unordered_map<Key, Value, Hash>::rehash(size_t n)
 {
 	if (n > _capacity) {
-		auto newBase = new std::forward_list<std::pair<Key, Value>>*[n] {};
-		for (size_t i = 0; i < _capacity; ++i) {
-			newBase[i] = _base[i];
+		auto oldCap = _capacity;
+		_capacity = n;
+		auto newBase = new std::forward_list<std::pair<Key, Value>>[n] {};
+		for (size_t i = 0; i < oldCap; ++i) {
+			for (const auto& el : _base[i]) {
+				size_t i = hash(el.first);
+				newBase[i].emplace_front(el.first, el.second);
+			}
 		}
 		delete[] _base;
 		_base = newBase;
-		_capacity = n;
 	}
 }
 
@@ -92,11 +101,7 @@ template <typename Key, typename Value, class Hash>
 Value& unordered_map<Key, Value, Hash>::operator[](const Key& key)
 {
 	size_t i = hash(key);
-	if (!_base[i]) {
-		insert(key, Value());
-		return (*this)[key];
-	}
-	auto& list = *_base[i];
+	auto& list = _base[i];
 	for (auto& el : list) {
 		if (el.first == key) {
 			return el.second;
@@ -112,10 +117,18 @@ bool unordered_map<Key, Value, Hash>::contains(const Key& key)
 	size_t i = hash(key);
 	if (!_base[i])
 		return false;
-	for (const auto& el : *_base[i]) {
+	for (const auto& el : _base[i]) {
 		if (el.first == key) {
 			return true;
 		}
 	}
 	return false;
+}
+
+template<typename Key, typename Value, class Hash>
+void unordered_map<Key, Value, Hash>::clear()
+{
+	delete[] _base;
+	_base = nullptr;
+	_size = 0;
 }
