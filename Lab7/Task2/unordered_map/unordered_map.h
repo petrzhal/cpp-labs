@@ -16,9 +16,21 @@ struct hash {
 };
 
 template <>
+struct hash<std::string> {
+	size_t operator()(const std::string& key) {
+		size_t hash = 0;
+		for (size_t i = 0; i < key.length(); i++)
+		{
+			hash += static_cast<size_t>(key[i]) * (i + 1);
+		}
+		return hash;
+	}
+};
+
+template <>
 struct hash<int> {
 	size_t operator()(int key) {
-		return key;
+		return static_cast<size_t>(key);
 	}
 };
 
