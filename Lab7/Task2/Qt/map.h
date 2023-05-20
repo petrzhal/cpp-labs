@@ -314,6 +314,8 @@ template<typename Key, typename Value>
 typename map<Key, Value>::iterator map<Key, Value>::begin()
 {
     auto tmp = root;
+    if (!tmp)
+        return iterator(nullptr, nullptr);
     while (tmp->left) {
         tmp = tmp->left;
     }
